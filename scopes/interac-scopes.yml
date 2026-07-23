@@ -1,0 +1,82 @@
+generated: '2026-07-23'
+method: searched
+source: https://gateway-portal.hub-verify.innovation.interac.ca/.well-known/openid-configuration
+docs: https://documents.hub-verify.innovation.interac.ca/docs/pre-configured-scopes
+schemes:
+- name: openid_connect
+  source: well-known/interac-openid-configuration.json
+  issuer: https://gateway-portal.hub-verify.innovation.interac.ca/
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://gateway-portal.hub-verify.innovation.interac.ca/auth
+    tokenUrl: https://gateway-portal.hub-verify.innovation.interac.ca/oauth2/token
+# Standard OIDC scopes advertised by the discovery document
+scopes:
+- scope: openid
+  description: Base OpenID Connect scope; required on every request.
+  sources: [well-known/interac-openid-configuration.json, docs]
+- scope: offline_access
+  description: Request a refresh token for offline access.
+  sources: [well-known/interac-openid-configuration.json]
+- scope: offline
+  description: Legacy offline-access alias advertised by the provider.
+  sources: [well-known/interac-openid-configuration.json]
+# Pre-configured product scopes documented in the Integration Guide appendix.
+# Each is requested combined with the base `openid` scope, e.g. "openid onlyVme_scope".
+product_scopes:
+- scope: onlyVme_scope
+  request: openid onlyVme_scope
+  flow: IVS
+  description: >-
+    Presents the user with the Interac verification service financial-institution
+    selection screen (Interac Verification Service only).
+  source: docs
+- scope: document_scope
+  request: openid document_scope
+  flow: IDVS
+  description: >-
+    Presents the user with the Interac document verification service screen for
+    government-ID document and biometric selfie scanning.
+  returns_claims:
+  - doc_type
+  - scan_result
+  - suspected_flags
+  - rejected_flags
+  - doc_number
+  - birthdate
+  - expiry_date
+  - family_name
+  - given_name
+  - issue_date
+  - issuing_authority
+  - issuing_country
+  - nationality
+  - address
+  - source
+  - sub
+  - com.securekey.verified.me.ui_locale
+  - com.securekey.vids.job_id
+  source: docs
+- scope: general_scope
+  request: openid general_scope
+  flow: IVS | IDVS
+  description: >-
+    Presents the user with an option to choose the Interac verification service
+    flow OR the document verification service flow; claims vary by user selection.
+  source: docs
+- scope: dual_scope
+  request: openid dual_scope
+  flow: IVS + IDVS
+  description: >-
+    Two-step flow: the user completes the Interac verification service flow first
+    and then document verification. Returns the combined IVS + IDVS claims plus
+    match scores comparing the verified financial-institution data against the
+    scanned document (populated when both flows complete with CLEAR status).
+  source: docs
+notes: >-
+  The discovery document advertises only the base OIDC scopes (openid,
+  offline_access, offline). The product scopes above (onlyVme_scope,
+  document_scope, general_scope, dual_scope) are pre-configured per relying
+  party and documented in the Hub Integration Guide appendix rather than in the
+  discovery metadata; the exact scope strings provisioned for a partner are
+  issued during onboarding.

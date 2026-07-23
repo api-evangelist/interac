@@ -1,0 +1,24 @@
+generated: '2026-07-23'
+method: searched
+source: https://gateway-portal.hub-verify.innovation.interac.ca/.well-known/*
+host: https://gateway-portal.hub-verify.innovation.interac.ca
+documents:
+- path: /.well-known/openid-configuration   # OpenID Connect Discovery 1.0
+  status: 200
+  file: interac-openid-configuration.json
+- path: /.well-known/jwks.json               # RFC 7517 JSON Web Key Set (id_token signing keys)
+  status: 200
+  file: interac-jwks.json
+- path: /.well-known/oauth-authorization-server  # RFC 8414
+  status: 401
+- path: /.well-known/security.txt            # RFC 9116
+  status: 401
+- path: /.well-known/api-catalog             # RFC 9727
+  status: 401
+notes: >-
+  The gateway root requires authentication for every path except the OIDC
+  discovery document and the JWKS endpoint, which are served anonymously (HTTP
+  200). Per the docs, preprod and production issuer URLs are restricted and
+  provided during partner onboarding; the developer-portal issuer discovery
+  above is the single public machine-readable contract for the Hub Verification
+  Service.

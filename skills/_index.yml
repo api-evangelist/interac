@@ -1,0 +1,16 @@
+generated: '2026-07-23'
+method: generated
+source: >-
+  Grounded in the documented Interac Hub OAuth/OIDC endpoints
+  (https://documents.hub-verify.innovation.interac.ca/docs/quick-start-guide)
+  and the live OIDC discovery document.
+skills:
+- file: interac-verify-identity.md
+  name: Verify a user's identity with the Interac Hub
+  api: Interac Hub Verification API
+  operations:
+  - GET /.well-known/openid-configuration
+  - POST /auth/par
+  - GET /auth
+  - POST /oauth2/token
+  - GET /userinfo

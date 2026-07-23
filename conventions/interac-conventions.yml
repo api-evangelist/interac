@@ -1,0 +1,40 @@
+generated: '2026-07-23'
+method: searched
+source: https://documents.hub-verify.innovation.interac.ca/docs/*
+authentication:
+  style: oauth2-oidc-authorization-code
+  par: recommended            # POST /auth/par back-channel
+  request_object: signed JWT (JAR); require_request_uri_registration true
+  client_auth: private_key_jwt (RS256 client assertion) or client_secret_post/basic
+  ref: authentication/interac-authentication.yml
+scopes:
+  ref: scopes/interac-scopes.yml
+  pattern: 'openid <product_scope>'   # e.g. "openid document_scope"
+idempotency:
+  supported: false
+  note: No idempotency-key header or mechanism is documented; verification flows are user-driven, redirect-based sessions.
+pagination:
+  supported: false
+  note: The API surface is the OAuth/OIDC endpoint set; no collection/list endpoints are exposed.
+request_tracing:
+  state_parameter: true
+  note: The OAuth `state` parameter round-trips through the authorization redirect and error responses.
+error_envelope:
+  authorization: 'redirect: ?error=&error_description=&locale=&state= (RFC 6749 4.1.2.1)'
+  token_userinfo: 'json: {error, error_description}'
+  ref: errors/interac-problem-types.yml
+claims_delivery:
+  transport: GET /userinfo (bearer token)
+  source_field: 'source'      # e.g. "bank" (IVS) or "driving_licence" (IDVS)
+  id_token_signing: RS256
+data_retention:
+  relying_party_obligation: retain license_id / job_id for 7 years
+  ref: lifecycle/interac-lifecycle.yml
+versioning:
+  scheme: service-generation (Hub v2); resolve endpoints from discovery document
+  ref: lifecycle/interac-lifecycle.yml
+notes: >-
+  The Hub Verification Service is an OAuth/OIDC-native API: the "conventions" are
+  the OAuth 2.0 / OpenID Connect contract rather than REST resource semantics.
+  No idempotency, pagination, or rate-limit signaling is documented, so no
+  Idempotency pointer is emitted.

@@ -1,0 +1,42 @@
+generated: '2026-07-23'
+method: searched
+source: https://documents.hub-verify.innovation.interac.ca/docs/*
+versioning:
+  scheme: service-version
+  current: Hub v2
+  evidence: >-
+    Service specification is published as "hubv2-service-specification"; the Hub
+    API is the v2 generation of the Interac verification service (formerly
+    Verified.Me / VerifiedMe).
+  discovery: >-
+    Endpoint URLs are subject to change; the docs advise clients to re-query
+    /.well-known/openid-configuration periodically rather than hard-coding them.
+environments:
+- name: Developer Portal (sandbox)
+  issuer: https://gateway-portal.hub-verify.innovation.interac.ca/
+  access: self-serve
+- name: Preprod
+  access: partner-gated (issuer provided at onboarding)
+- name: Prod
+  access: partner-gated (issuer provided at onboarding); uses live financial institutions
+data_retention:
+  policy: >-
+    The license_id or job_id linked to a transaction/member must be retained by
+    the relying party / DAC for 7 years, stored alongside non-PII transaction
+    metadata (timestamps, purpose) to support investigations of unauthorized
+    transactions.
+  duration: 7 years
+  source: https://documents.hub-verify.innovation.interac.ca/docs/license-id-retention
+deprecation:
+  policy_url: null
+  sunset_header: null
+  note: No published deprecation policy or RFC 8594 Sunset/Deprecation header support found for this API.
+status_page: null
+sla:
+  url: null
+  note: No public SLA / uptime target published for the Hub Verification developer surface.
+notes: >-
+  No public status page or deprecation policy was found for the Hub Verification
+  Service developer surface, so no StatusPage/Deprecation pointers are emitted.
+  Versioning is expressed at the service-generation level (Hub v2) and clients
+  are told to resolve endpoints dynamically from the discovery document.

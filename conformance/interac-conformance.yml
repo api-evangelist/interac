@@ -1,0 +1,60 @@
+generated: '2026-07-23'
+method: searched
+source: >-
+  https://gateway-portal.hub-verify.innovation.interac.ca/.well-known/openid-configuration
+  + https://documents.hub-verify.innovation.interac.ca/docs/*
+standards:
+- id: oauth2
+  conforms: true
+  evidence: >-
+    Authorization Code Grant advertised in grant_types_supported; authorization,
+    token, and PAR endpoints present (RFC 6749).
+- id: oidc-core
+  conforms: true
+  evidence: OpenID Connect 1.0 Authorization Code flow; id_token RS256; userinfo endpoint.
+- id: oidc-discovery
+  conforms: true
+  evidence: >-
+    /.well-known/openid-configuration served per OpenID Connect Discovery 1.0
+    (HTTP 200, anonymous).
+- id: rfc9126-par
+  conforms: true
+  evidence: >-
+    pushed_authorization_request_endpoint advertised (POST /auth/par); PAR is the
+    recommended back-channel authorization method (RFC 9126).
+- id: rfc9101-jar
+  conforms: true
+  evidence: >-
+    request_parameter_supported and request_uri_parameter_supported are true;
+    require_request_uri_registration true; authorization requests carried as a
+    signed JWT request object (JWT-Secured Authorization Request, RFC 9101).
+- id: rfc7523-private-key-jwt
+  conforms: true
+  evidence: >-
+    token_endpoint_auth_methods_supported includes private_key_jwt (JWT client
+    assertion, RFC 7523); RP publishes an RS256 JWKS URL.
+- id: rfc7517-jwks
+  conforms: true
+  evidence: jwks_uri served at /.well-known/jwks.json (RFC 7517); RS256 signing keys.
+- id: rfc6749-error-format
+  conforms: true
+  evidence: >-
+    Authorization errors returned per RFC 6749 4.1.2.1 (error/error_description
+    on the redirect); token/userinfo errors as JSON {error, error_description}.
+- id: rfc7636-pkce
+  conforms: false
+  evidence: >-
+    Not advertised; code_challenge_methods_supported absent from discovery.
+    Client authentication relies on private_key_jwt and signed request objects
+    rather than PKCE.
+- id: fapi
+  conforms: partial
+  evidence: >-
+    Uses FAPI-aligned building blocks (PAR, signed request objects,
+    private_key_jwt, RS256) but does not publicly declare a FAPI profile
+    conformance certification.
+notes: >-
+  Assertions derived from the live OIDC discovery metadata and the public
+  Integration Guide. Interac Corp. maintains organizational security/compliance
+  programs, but this Hub Verification API does not publish a certifications page
+  (SOC 2 / ISO 27001 / PCI), so no Compliance pointer is emitted.

@@ -1,0 +1,45 @@
+generated: '2026-07-23'
+method: searched
+source: https://documents.hub-verify.innovation.interac.ca/docs/*
+overview: >-
+  The Interac Hub developer portal offers a self-serve sandbox. Relying parties
+  set up an organization and a project, then exercise the verification flow in
+  two non-production modes before requesting partner-gated preprod/production
+  access. No literal test credentials are published — MyBank test bank accounts
+  are provisioned through a restricted internal request (CSV template), and IDVS
+  positive testing requires real government IDs even in preprod.
+modes:
+- name: Playground Mode
+  purpose: >-
+    Run a project against simulated verification responses to explore the flow
+    without a full integration.
+  source: https://documents.hub-verify.innovation.interac.ca/docs/running-a-project-with-playground-mode
+- name: Developer Mode
+  purpose: End-to-end developer testing environment for an integrated project.
+  source: https://documents.hub-verify.innovation.interac.ca/docs/developer-mode
+environments:
+- name: Developer Portal / sandbox
+  issuer: https://gateway-portal.hub-verify.innovation.interac.ca/
+  access: self-serve
+- name: Preprod
+  access: partner-gated; issuer provided at onboarding
+- name: Prod
+  access: partner-gated; uses live financial institutions
+test_data:
+  ivs:
+    test_fi: MyBank
+    environment: Preprod
+    credentials: >-
+      Not published. Test bank accounts for the MyBank organization are created
+      on request via a CSV template through a restricted internal process.
+    source: https://documents.hub-verify.innovation.interac.ca/docs/ivs-test-financial-institution-accounts
+  idvs:
+    requirement: >-
+      Integration partners must use real government IDs for positive testing in
+      both preprod and prod; no synthetic test documents are published.
+    source: https://documents.hub-verify.innovation.interac.ca/docs/idvs-test-documents
+notes: >-
+  Sandbox access is real (Playground/Developer modes + MyBank preprod FI) but
+  Interac deliberately does not publish reusable literal test credentials or
+  test document values; those are provisioned per organization. No values are
+  invented here.

@@ -1,0 +1,48 @@
+generated: '2026-07-23'
+method: searched
+source: https://documents.hub-verify.innovation.interac.ca/docs/error-cases
+format: oauth2                # RFC 6749 OAuth-style error envelope (not RFC 9457)
+envelopes:
+  authorization_endpoint:
+    style: redirect
+    reference: RFC 6749 section 4.1.2.1
+    shape: >-
+      {redirect_uri}?error={code}&error_description={desc}&locale={lang}&state={state}
+  token_userinfo_endpoint:
+    style: json
+    shape: '{ "error": "<code>", "error_description": "<message>" }'
+problems:
+- code: access_denied
+  endpoint: authorization
+  meaning: User cancelled, or the verification (IVS/IDVS) failed.
+  remediation: Display a user-friendly error screen and offer recovery options.
+- code: session_expired
+  endpoint: authorization
+  meaning: User timed out before completing the verification flow.
+  remediation: Notify the user and allow a retry.
+- code: invalid_grant
+  endpoint: token
+  meaning: Invalid or expired authorization code or refresh token.
+  remediation: Re-submit a fresh authorization request.
+- code: request_unauthorized
+  endpoint: userinfo
+  meaning: Invalid credentials or malformed request to the UserInfo endpoint.
+  remediation: Verify client credentials/token and retry.
+- code: invalid_token
+  endpoint: userinfo
+  meaning: The access token has expired (message includes the expiry timestamp).
+  remediation: Refresh the access token and retry.
+service_specific:
+- flow: IVS
+  code: access_denied
+  detail: '"Service error" description returned when financial-institution verification fails.'
+- flow: IDVS
+  code: access_denied
+  detail: 'Document suspected ("Document S") or document rejected ("Document R").'
+- flow: dual
+  code: access_denied
+  detail: 'Combined messaging, e.g. "Verified.Me cancelled and Document S".'
+notes: >-
+  Errors follow the OAuth 2.0 / OIDC error model rather than RFC 9457 problem
+  details. Providers should implement fallback handling for unrecognized error
+  codes and surface actionable next steps to the user.

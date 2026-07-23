@@ -64,6 +64,8 @@ apis:
   - type: OpenIDConnectDiscovery
     url: https://gateway-portal.hub-verify.innovation.interac.ca/.well-known/openid-configuration
 common:
+- type: DomainSecurity
+  url: security/interac-domain-security.yml
 - type: Website
   url: https://www.interac.ca/
 - type: DeveloperPortal
@@ -80,6 +82,30 @@ common:
   url: https://www.interac.ca/en/privacy/
 - type: TermsOfService
   url: https://www.interac.ca/en/legal/
+- type: GettingStarted
+  url: https://documents.hub-verify.innovation.interac.ca/docs/quick-start-guide
+- type: Support
+  url: https://innovation.interac.ca/support/
+- type: WellKnown
+  url: well-known/interac-well-known.yml
+- type: Authentication
+  url: authentication/interac-authentication.yml
+- type: OAuthScopes
+  url: scopes/interac-scopes.yml
+- type: Conformance
+  url: conformance/interac-conformance.yml
+- type: ErrorCatalog
+  url: errors/interac-problem-types.yml
+- type: Lifecycle
+  url: lifecycle/interac-lifecycle.yml
+- type: Conventions
+  url: conventions/interac-conventions.yml
+- type: Sandbox
+  url: sandbox/interac-sandbox.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: LLMsTxt
+  url: llms/interac-llms.txt
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com

@@ -1,0 +1,32 @@
+# Interac
+
+> Interac Corp. is Canada's domestic payments and digital verification network — shared national payment infrastructure owned by a consortium of Canadian financial institutions. It operates Interac Debit, Interac e-Transfer, and Interac verification / digital identity services. Its most openly documented public API is the Interac Hub Verification Service, an OAuth 2.0 / OpenID Connect identity-verification API (Authorization Code Grant with Pushed Authorization Requests).
+
+## APIs
+- [Interac Hub Verification API](https://documents.hub-verify.innovation.interac.ca/docs/overview): OAuth2/OIDC identity verification via financial-institution auth (IVS) and government-ID + selfie (IDVS).
+
+## Contract
+- [OpenID Connect discovery](https://gateway-portal.hub-verify.innovation.interac.ca/.well-known/openid-configuration): live issuer metadata (authorization, PAR, token, userinfo, JWKS endpoints). The single public machine-readable contract — no OpenAPI is published.
+- [JWKS](https://gateway-portal.hub-verify.innovation.interac.ca/.well-known/jwks.json): RS256 id_token signing keys.
+
+## Docs
+- [Welcome / doc index](https://documents.hub-verify.innovation.interac.ca/docs/welcome)
+- [Overview (IVS / IDVS)](https://documents.hub-verify.innovation.interac.ca/docs/overview)
+- [Quick Start Guide](https://documents.hub-verify.innovation.interac.ca/docs/quick-start-guide)
+- [API Endpoints](https://documents.hub-verify.innovation.interac.ca/docs/31-api-endpoints)
+- [Pre-configured Scopes](https://documents.hub-verify.innovation.interac.ca/docs/pre-configured-scopes)
+- [Error Cases](https://documents.hub-verify.innovation.interac.ca/docs/error-cases)
+- [Data Retention](https://documents.hub-verify.innovation.interac.ca/docs/license-id-retention)
+- [Developer Portal](https://innovation.interac.ca/)
+- [Support / FAQ](https://innovation.interac.ca/support/)
+
+## Repo artifacts
+- authentication/interac-authentication.yml — OAuth2/OIDC auth profile (PAR, private_key_jwt, RS256)
+- scopes/interac-scopes.yml — OIDC + product scopes (onlyVme_scope, document_scope, general_scope, dual_scope)
+- conformance/interac-conformance.yml — OAuth2, OIDC, PAR (RFC 9126), JAR (RFC 9101), private_key_jwt (RFC 7523), JWKS
+- errors/interac-problem-types.yml — OAuth-style error catalog
+- lifecycle/interac-lifecycle.yml — Hub v2 versioning + 7-year retention
+- conventions/interac-conventions.yml — OAuth/OIDC request/response semantics
+- sandbox/interac-sandbox.yml — Playground / Developer modes, MyBank preprod
+- skills/interac-verify-identity.md — packaged agent skill for the verification flow
+- security/interac-domain-security.yml — TLS/HSTS/DNS posture

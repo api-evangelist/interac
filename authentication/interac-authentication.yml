@@ -1,0 +1,43 @@
+generated: '2026-07-23'
+method: searched
+source: https://gateway-portal.hub-verify.innovation.interac.ca/.well-known/openid-configuration
+docs: https://documents.hub-verify.innovation.interac.ca/docs/quick-start-guide
+summary:
+  types: [oauth2, openIdConnect]
+  oauth2_flows: [authorizationCode, implicit, clientCredentials, refreshToken]
+  oidc: true
+  par_required: true
+  request_object: true          # signed JWT request parameter (JAR)
+  client_auth: [client_secret_post, client_secret_basic, private_key_jwt, none]
+  id_token_signing: [RS256]
+schemes:
+- name: openid_connect
+  type: openIdConnect
+  openIdConnectUrl: https://gateway-portal.hub-verify.innovation.interac.ca/.well-known/openid-configuration
+  issuer: https://gateway-portal.hub-verify.innovation.interac.ca/
+  sources: [well-known/interac-openid-configuration.json]
+- name: oauth2
+  type: oauth2
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://gateway-portal.hub-verify.innovation.interac.ca/auth
+    tokenUrl: https://gateway-portal.hub-verify.innovation.interac.ca/oauth2/token
+    pushedAuthorizationRequestUrl: https://gateway-portal.hub-verify.innovation.interac.ca/auth/par
+    refreshUrl: https://gateway-portal.hub-verify.innovation.interac.ca/oauth2/token
+  grant_types_supported: [authorization_code, implicit, client_credentials, refresh_token]
+endpoints:
+  authorization_endpoint: https://gateway-portal.hub-verify.innovation.interac.ca/auth
+  pushed_authorization_request_endpoint: https://gateway-portal.hub-verify.innovation.interac.ca/auth/par
+  token_endpoint: https://gateway-portal.hub-verify.innovation.interac.ca/oauth2/token
+  userinfo_endpoint: https://gateway-portal.hub-verify.innovation.interac.ca/userinfo
+  jwks_uri: https://gateway-portal.hub-verify.innovation.interac.ca/.well-known/jwks.json
+notes: >-
+  Relying parties authenticate with the OAuth 2.0 / OpenID Connect Authorization
+  Code Grant. The authorization request is carried either as a signed JWT request
+  object on GET /auth or, preferably, via a back-channel Pushed Authorization
+  Request (POST /auth/par); require_request_uri_registration and
+  request_parameter_supported are both true. Clients authenticate to the token
+  endpoint with private_key_jwt (a client assertion signed by the RP's RSA key,
+  published at the RP's own JWKS URL) or client_secret_post/basic. id_tokens are
+  signed RS256. Verified claims are retrieved from GET /userinfo with the bearer
+  access token. Production issuer/endpoints are provisioned at partner onboarding.
