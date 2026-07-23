@@ -1,0 +1,85 @@
+aid: interac
+url: https://raw.githubusercontent.com/api-evangelist/interac/refs/heads/main/apis.yml
+name: Interac
+kind: company
+description: >-
+  Interac Corp. is Canada's domestic payments and digital verification network,
+  founded in 1984 as the Interac Association and reorganized as a for-profit
+  corporation in 2018 (through the merger of Interac Association and Acxsys).
+  Headquartered in Toronto and owned by a consortium of Canadian financial
+  institutions and payment processors, Interac is shared national payment
+  infrastructure rather than a chartered bank — it has no Schedule I / Schedule II
+  banking charter. It operates the Interac Debit domestic debit network, Interac
+  e-Transfer (used by roughly 88% of Canadians), and Interac verification / digital
+  identity services, connecting 300+ financial institutions and processing on the
+  order of 18.6 million transactions a day. As one of the core Canadian rails
+  alongside Payments Canada, Interac runs the Interac Innovation Hub developer
+  program. Its most openly documented public API surface is the Interac Hub
+  Verification Service, an HTTP identity-verification API built on OAuth 2.0 and
+  OpenID Connect (Authorization Code Grant with Pushed Authorization Requests);
+  a self-serve sandbox is available through the Hub Verification developer portal,
+  while full production access and other products (Business Request Money, Interac
+  Direct) are partner-gated behind a commercial relationship with an issuing
+  financial institution.
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+tags:
+- Financial Services
+- Payments
+- Canada
+- Interac
+- Digital Identity
+- Verification
+- Open Banking
+- Consumer-Driven Banking
+- Infrastructure
+created: '2026-07-23'
+modified: '2026-07-23'
+specificationVersion: '0.19'
+apis:
+- aid: interac:interac-hub-verification-api
+  name: Interac Hub Verification API
+  description: >-
+    The Interac Hub is an HTTP API that simplifies digital identity verification.
+    Relying parties obtain verified identity data through financial-institution
+    authentication (Interac Verification Service, IVS) and/or government-ID plus
+    biometric selfie checks (Interac Document Verification Service, IDVS). It uses
+    the OAuth 2.0 / OpenID Connect 1.0 Authorization Code Grant flow (with Pushed
+    Authorization Requests), and offers a self-serve developer sandbox.
+  humanURL: https://documents.hub-verify.innovation.interac.ca/docs/overview
+  baseURL: https://gateway-portal.hub-verify.innovation.interac.ca
+  tags:
+  - Digital Identity
+  - Verification
+  - OpenID Connect
+  - KYC
+  properties:
+  - type: Documentation
+    url: https://documents.hub-verify.innovation.interac.ca/docs/welcome
+  - type: Documentation
+    url: https://documents.hub-verify.innovation.interac.ca/docs/overview
+  - type: APIReference
+    url: https://documents.hub-verify.innovation.interac.ca/docs/31-api-endpoints
+  - type: Documentation
+    url: https://documents.hub-verify.innovation.interac.ca/docs/quick-start-guide
+  - type: OpenIDConnectDiscovery
+    url: https://gateway-portal.hub-verify.innovation.interac.ca/.well-known/openid-configuration
+common:
+- type: Website
+  url: https://www.interac.ca/
+- type: DeveloperPortal
+  url: https://innovation.interac.ca/
+- type: Documentation
+  url: https://documents.hub-verify.innovation.interac.ca/docs/welcome
+- type: GitHubOrganization
+  url: https://github.com/Interac
+- type: LinkedIn
+  url: https://www.linkedin.com/company/interac-corp/
+- type: Blog
+  url: https://www.interac.ca/en/content-category/news/
+- type: PrivacyPolicy
+  url: https://www.interac.ca/en/privacy/
+- type: TermsOfService
+  url: https://www.interac.ca/en/legal/
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

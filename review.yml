@@ -1,0 +1,108 @@
+aid: interac
+name: Interac
+review:
+  question: Does Interac expose a documented, publicly reachable first-party developer API?
+  answer: true
+  date: '2026-07-23'
+  reviewer: API Evangelist
+findings:
+  summary: |
+    Interac Corp. runs a real first-party developer program, the Interac
+    Innovation Hub (innovation.interac.ca), and publishes documented developer
+    portals under it. The most openly reachable public API surface is the
+    Interac Hub Verification Service. Its documentation site
+    (documents.hub-verify.innovation.interac.ca/docs/*) returns HTTP 200 without
+    authentication and describes an HTTP identity-verification API built on
+    OAuth 2.0 and OpenID Connect 1.0 (Authorization Code Grant with Pushed
+    Authorization Requests). The service is composed of the Interac Verification
+    Service (IVS, financial-institution authentication) and the Interac Document
+    Verification Service (IDVS, government-ID plus biometric selfie). A live,
+    unauthenticated OpenID Connect discovery document is served at
+    gateway-portal.hub-verify.innovation.interac.ca/.well-known/openid-configuration
+    (HTTP 200) and was inspected verbatim; the gateway root itself returns 401
+    (auth required) and innovation.interac.ca returns 403 to automated clients,
+    consistent with a partner-gated production surface fronted by publicly
+    readable docs and a self-serve sandbox. No downloadable OpenAPI/Swagger
+    specification was found — the machine-readable artifact is the OIDC discovery
+    JSON, not an OpenAPI document. Full production access and Interac's other
+    products (Business Request Money, Interac Direct, e-Transfer for business)
+    require a commercial relationship with an issuing financial institution.
+  entityDiscipline: |
+    This is the Canadian entity Interac Corp. (interac.ca), the domestic payments
+    and verification network — shared infrastructure, not a chartered bank, with
+    no Schedule I / Schedule II charter.
+  openFinancePosture:
+    canadaMandate: >-
+      Canada has no operational open-banking mandate. The federal
+      Consumer-Driven Banking framework (Budget 2024 / FES 2024, FCAC as
+      overseer) is legislated but not yet live; access remains voluntary.
+    interacRole: >-
+      Interac is one of the core Canadian rails alongside Payments Canada,
+      operating Interac Debit, Interac e-Transfer, and Interac verification /
+      digital identity services for 300+ connected financial institutions.
+    fdxParticipation: false
+    section1033Posture: >-
+      Not applicable — 1033 is a US framework. No first-party FDX or
+      consumer data-access (open-banking) API is published by Interac.
+    aggregatorAccess: >-
+      Not applicable to Interac itself; Interac is infrastructure. Consumer
+      data aggregation in Canada is handled by aggregators (Flinks, Plaid, MX,
+      Salt Edge), not by Interac.
+  authModel:
+    - OAuth 2.0
+    - OpenID Connect 1.0 (Authorization Code Grant)
+    - Pushed Authorization Requests (PAR)
+  specProvenance: >-
+    No OpenAPI/Swagger document is published. The live OpenID Connect discovery
+    document at gateway-portal.hub-verify.innovation.interac.ca/.well-known/openid-configuration
+    (HTTP 200) is the machine-readable artifact and was inspected in place; it
+    was not saved into openapi/ because it is an OIDC discovery document, not an
+    OpenAPI specification.
+  transports:
+    - protocol: REST
+      scheme: https
+      baseURL: https://gateway-portal.hub-verify.innovation.interac.ca
+      documented: true
+      note: OAuth2/OIDC endpoints — /auth, /oauth2/token, /userinfo, /auth/par, /.well-known/openid-configuration.
+    - protocol: WebSocket
+      scheme: wss
+      documented: false
+      note: No WebSocket surface is documented.
+  probes:
+    - url: https://documents.hub-verify.innovation.interac.ca/docs/welcome
+      status: 200
+    - url: https://documents.hub-verify.innovation.interac.ca/docs/31-api-endpoints
+      status: 200
+    - url: https://gateway-portal.hub-verify.innovation.interac.ca/.well-known/openid-configuration
+      status: 200
+    - url: https://gateway-portal.hub-verify.innovation.interac.ca
+      status: 401
+    - url: https://innovation.interac.ca
+      status: 403
+    - url: https://developer.interac.ca
+      status: 000
+      note: Does not resolve, despite being listed as the GitHub org blog URL.
+    - url: https://www.interac.ca
+      status: 200
+    - url: https://github.com/Interac
+      status: 200
+      note: Verified org, 0 public repos, location Toronto, email developer@interac.ca.
+sources:
+  - url: https://documents.hub-verify.innovation.interac.ca/docs/welcome
+    type: Documentation
+    note: Interac Developer Portal welcome page for the Hub Verification Service.
+  - url: https://documents.hub-verify.innovation.interac.ca/docs/overview
+    type: Documentation
+    note: Hub integration overview — HTTP API, OAuth2/OIDC Authorization Code Grant, IVS + IDVS.
+  - url: https://documents.hub-verify.innovation.interac.ca/docs/31-api-endpoints
+    type: APIReference
+    note: Documents /auth, /oauth2/token, /userinfo, /auth/par, /.well-known/openid-configuration.
+  - url: https://gateway-portal.hub-verify.innovation.interac.ca/.well-known/openid-configuration
+    type: OpenIDConnectDiscovery
+    note: Live public OIDC discovery JSON — issuer, authorization/token/userinfo/jwks/PAR endpoints, RS256.
+  - url: https://innovation.interac.ca/
+    type: DeveloperPortal
+    note: Interac Innovation Hub developer program (403 to bots; partner-gated).
+  - url: https://www.interac.ca/en/about/
+    type: Website
+    note: Corporate profile — founded 1984, 300+ FIs, ~18.6M daily transactions.
