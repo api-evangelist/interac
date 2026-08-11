@@ -1,0 +1,240 @@
+openapi: 3.2.0
+info:
+  title: Interac Open ID API
+  version: 2.2.12
+  contact:
+    name: SecureKey Technologies, Office of the CTO.
+  license:
+    name: Copyright SecureKey Technologies Inc. This file contains software code and related documentation that is the intellectual property of SecureKey. SecureKey reserves all rights in the code and related documentation. You may not use it without written permission from SecureKey.
+  description: 'Operations tagged OpenID across 2 of this provider''s published API definitions: interac-securekey-hub-2.yml, interac-securekey-hub-3.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://gateway-portal.hub-verify.innovation.interac.ca/.well-known/openid-configuration
+  description: Sandbox
+tags:
+- name: OpenID
+  description: OpenID Connect endpoints.
+paths:
+  /.well-known/openid-configuration:
+    get:
+      summary: Server well known configuration
+      description: "Retrieves the server's OpenID Connect configuration information, essential for clients to interact with the OpenID Provider.  This includes key details like authorization, token, userinfo endpoints, supported response types, and more. \nFor more information, please refer to https://openid.net/specs/openid-connect-discovery-1_0.html\n"
+      tags:
+      - OpenID
+      operationId: WellKnownConfiguration
+      responses:
+        '200':
+          description: Returns the OpenID Provider's configuration details, including endpoints and supported features.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WellKnown'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    servers:
+    - url: https://gateway-portal.hub-verify.innovation.interac.ca/.well-known/openid-configuration
+      description: Sandbox
+components:
+  schemas:
+    GenericError:
+      description: The standard error format
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: string
+          example: server_error
+        error_description:
+          type: string
+          example: Failed to process request because of unexpected error
+    WellKnown:
+      type: object
+      required:
+      - issuer
+      - authorization_endpoint
+      - token_endpoint
+      - jwks_uri
+      - response_types_supported
+      - subject_types_supported
+      - id_token_signing_alg_values_supported
+      properties:
+        issuer:
+          description: 'URL using the https scheme with no query or fragment component that the OIDC Provider (OP) asserts as its Issuer Identifier. If Issuer discovery is supported , this value MUST be identical to the issuer value returned by WebFinger. This also MUST be identical to the iss Claim value in ID Tokens issued from this Issuer.
+
+            '
+          type: string
+          format: uri
+          example: https://gateway.preprod.hub-verify.interac-id.ca/
+        authorization_endpoint:
+          description: URL of the OP's OAuth 2.0 Authorization Endpoint
+          type: string
+          format: uri
+          example: https://gateway.preprod.hub-verify.interac-id.ca/auth
+        token_endpoint:
+          description: URL of the OP's OAuth 2.0 Token Endpoint
+          type: string
+          format: uri
+          example: https://gateway.preprod.hub-verify.interac-id.ca/oauth2/token
+        jwks_uri:
+          description: 'URL of the OP''s JSON Web Key Set [JWK] document. This contains the signing key(s) the RP uses to validate signatures from the OP.  The JWK Set MAY also contain the Server''s encryption key(s), which are used by RPs to encrypt requests to the Server. When both signing and encryption keys are made available, a use (Key Use) parameter value is REQUIRED for  all keys in the referenced JWK Set to indicate each key''s intended usage.
+
+            Although some algorithms allow the same key to be used for both signatures and encryption, doing so is NOT RECOMMENDED, as it is less secure.  The JWK x5c parameter MAY be used to provide X.509 representations of keys provided. When used, the bare key values MUST still be present and MUST match those in the certificate.
+
+            '
+          type: string
+          format: uri
+          example: https://gateway.preprod.hub-verify.interac-id.ca/.well-known/jwks.json
+        response_types_supported:
+          description: 'JSON array containing a list of the OAuth 2.0 response_type values that this OP supports. Dynamic OpenID Providers MUST support the code,  id_token, and the token id_token Response Type values.
+
+            '
+          type: array
+          items:
+            type: string
+          example:
+          - code
+          - token
+          - code id_token
+        subject_types_supported:
+          description: JSON array containing a list of the Subject Identifier types that this OP supports.  Valid types include pairwise and public.
+          type: array
+          items:
+            type: string
+            enum:
+            - pairwise
+            - public
+          example:
+          - public
+          - pairwise
+        id_token_signing_alg_values_supported:
+          description: 'JSON array containing a list of the JWS signing algorithms (alg values) supported by the OP  for the ID Token to encode the Claims in a JWT [JWT]. The algorithm RS256 MUST be included.  The value none MAY be supported, but MUST NOT be used unless the Response Type used returns no ID Token from the Authorization Endpoint (such as when using the Authorization Code Flow).
+
+            '
+          type: array
+          items:
+            type: string
+          example:
+          - RS256
+        userinfo_endpoint:
+          description: 'URL of the OpenID Provider''s UserInfo Endpoint.  This endpoint returns Claims about the authenticated End-User.
+
+            '
+          type: string
+          format: uri
+          example: https://gateway.preprod.hub-verify.interac-id.ca/userinfo
+        scopes_supported:
+          description: 'JSON array containing a list of OAuth 2.0 scope values supported by the server.  Must include ''openid'' scope value.
+
+            '
+          type: array
+          items:
+            type: string
+          example:
+          - openid
+        claims_supported:
+          type: array
+          items:
+            type: string
+          description: 'JSON array containing a list of Claim Names of the Claims that  the OpenID Provider may be able to supply values for.
+
+            '
+          example:
+          - sub
+        pushed_authorization_request_endpoint:
+          description: 'The URL of the pushed authorization request endpoint where a client can post an authorization request. The endpoint supports only clients configured for Subject Input Matching.
+
+            '
+          type: string
+          format: uri
+          example: https://gateway.preprod.hub-verify.interac-id.ca/auth/par
+        require_pushed_authorization_requests:
+          description: 'Boolean parameter indicating whether the authorization server accepts authorization request data only via Pushed Authorization Requests (PAR). If omitted, the default value is "false".
+
+            '
+          type: boolean
+          example: false
+        response_modes_supported:
+          description: 'JSON array containing a list of the OAuth 2.0 response mode values that this OpenID Provider supports. These determine how the authorization response should be returned from the authorization endpoint. Common values include ''query'', ''fragment'', and ''form_post''.
+
+            '
+          type: array
+          items:
+            type: string
+          example:
+          - query
+        grant_types_supported:
+          description: 'JSON array containing a list of the OAuth 2.0 Grant Type values that this OpenID Provider supports. This includes grant types like ''authorization_code'', ''implicit'', and others. The server must support ''authorization_code'' and ''implicit''.
+
+            '
+          type: array
+          items:
+            type: string
+          example:
+          - authorization_code
+          - implicit
+        userinfo_signing_alg_values_supported:
+          description: 'JSON array containing a list of the JSON Web Signature (JWS) algorithm values supported  by the UserInfo Endpoint for signing the response. It indicates the algorithms that the  OpenID Provider can use to sign the user information it provides.
+
+            '
+          type: array
+          items:
+            type: string
+          example:
+          - none
+          - RS256
+        request_object_signing_alg_values_supported:
+          description: 'JSON array containing a list of the JWS algorithm values supported by the OpenID Provider for signing Request Objects. These algorithms are used for signing the requests sent to the authorization endpoint.
+
+            '
+          type: array
+          items:
+            type: string
+          example:
+          - RS256
+        token_endpoint_auth_methods_supported:
+          description: 'JSON array containing a list of Client Authentication methods supported by the Token Endpoint. This includes methods such as client secret post, client secret basic, private key JWT, and others.
+
+            '
+          type: array
+          items:
+            type: string
+          example:
+          - client_secret_post
+          - client_secret_basic
+          - private_key_jwt
+        claims_parameter_supported:
+          description: 'Boolean value specifying whether the OpenID Provider supports the use of the ''claims'' parameter to request specific claims. A value of ''true'' indicates support for this feature.
+
+            '
+          type: boolean
+          example: true
+        request_parameter_supported:
+          description: 'Boolean value indicating whether the OpenID Provider supports the use of the ''request'' parameter, which can carry a Request Object by value.
+
+            '
+          type: boolean
+          example: true
+        request_uri_parameter_supported:
+          description: 'Boolean value indicating whether the OpenID Provider supports the use of the ''request_uri'' parameter, which can reference a Request Object by URL.
+
+            '
+          type: boolean
+          example: true
+        require_request_uri_registration:
+          description: 'Boolean value specifying whether the OpenID Provider requires pre-registration of any ''request_uri'' values used in the ''request_uri'' parameter. A value of ''true'' means pre-registration is required.
+
+            '
+          type: boolean
+          example: false
+  responses:
+    InternalServerError:
+      description: 'Internal Server Error. Returned when request was not processed because of an unexpected/unknown error.
+
+        '
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenericError'
+x-refined-from:
+- interac-securekey-hub-2.yml
+- interac-securekey-hub-3.yml
