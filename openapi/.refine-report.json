@@ -1,0 +1,30 @@
+{
+  "provider": "interac",
+  "sources": [
+    "interac-securekey-hub-2.yml",
+    "interac-securekey-hub-3.yml",
+    "interac-securekey-hub.yml"
+  ],
+  "outputs": [
+    "interac-oauth2-api-openapi.yml",
+    "interac-openid-api-openapi.yml",
+    "interac-userinfo-api-openapi.yml"
+  ],
+  "archived": [
+    "archived openapi/interac-securekey-hub-2.yml",
+    "archived openapi/interac-securekey-hub-3.yml",
+    "archived openapi/interac-securekey-hub.yml"
+  ],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "interac-securekey-hub-2.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "interac-securekey-hub-3.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "interac-securekey-hub.yml: upgraded openapi 3.0.1 -> OpenAPI 3.2.0",
+    "tag 'OAuth2' spans 3 source specs (interac-securekey-hub-2.yml, interac-securekey-hub-3.yml, interac-securekey-hub.yml): per-path servers applied",
+    "tag 'OpenID' spans 2 source specs (interac-securekey-hub-2.yml, interac-securekey-hub-3.yml): per-path servers applied",
+    "tag 'UserInfo' spans 3 source specs (interac-securekey-hub-2.yml, interac-securekey-hub-3.yml, interac-securekey-hub.yml): per-path servers applied",
+    "apis.yml register: written (+3 apis, 4 total)"
+  ],
+  "skipped": []
+}

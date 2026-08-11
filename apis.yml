@@ -39,12 +39,11 @@ apis:
 - aid: interac:interac-hub-verification-api
   name: Interac Hub Verification API
   description: >-
-    The Interac Hub is an HTTP API that simplifies digital identity verification.
-    Relying parties obtain verified identity data through financial-institution
-    authentication (Interac Verification Service, IVS) and/or government-ID plus
-    biometric selfie checks (Interac Document Verification Service, IDVS). It uses
-    the OAuth 2.0 / OpenID Connect 1.0 Authorization Code Grant flow (with Pushed
-    Authorization Requests), and offers a self-serve developer sandbox.
+    The Interac Hub is an HTTP API that simplifies digital identity verification. Relying parties obtain
+    verified identity data through financial-institution authentication (Interac Verification Service,
+    IVS) and/or government-ID plus biometric selfie checks (Interac Document Verification Service, IDVS).
+    It uses the OAuth 2.0 / OpenID Connect 1.0 Authorization Code Grant flow (with Pushed Authorization
+    Requests), and offers a self-serve developer sandbox.
   humanURL: https://documents.hub-verify.innovation.interac.ca/docs/overview
   baseURL: https://gateway-portal.hub-verify.innovation.interac.ca
   tags:
@@ -63,6 +62,36 @@ apis:
     url: https://documents.hub-verify.innovation.interac.ca/docs/quick-start-guide
   - type: OpenIDConnectDiscovery
     url: https://gateway-portal.hub-verify.innovation.interac.ca/.well-known/openid-configuration
+- aid: interac:interac-oauth2-api
+  name: Interac O Auth2 API
+  description: OAuth2 endpoints.
+  humanURL: https://documents.hub-verify.innovation.interac.ca/docs/overview
+  baseURL: https://gateway-portal.hub-verify.innovation.interac.ca
+  tags:
+  - OAuth2
+  properties:
+  - type: OpenAPI
+    url: openapi/interac-oauth2-api-openapi.yml
+- aid: interac:interac-openid-api
+  name: Interac Open ID API
+  description: OpenID Connect endpoints.
+  humanURL: https://documents.hub-verify.innovation.interac.ca/docs/overview
+  baseURL: https://gateway-portal.hub-verify.innovation.interac.ca
+  tags:
+  - OpenID
+  properties:
+  - type: OpenAPI
+    url: openapi/interac-openid-api-openapi.yml
+- aid: interac:interac-userinfo-api
+  name: Interac User Info API
+  description: User Info
+  humanURL: https://documents.hub-verify.innovation.interac.ca/docs/overview
+  baseURL: https://gateway-portal.hub-verify.innovation.interac.ca
+  tags:
+  - UserInfo
+  properties:
+  - type: OpenAPI
+    url: openapi/interac-userinfo-api-openapi.yml
 common:
 - type: DomainSecurity
   url: security/interac-domain-security.yml
