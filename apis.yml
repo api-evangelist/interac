@@ -34,7 +34,7 @@ tags:
 - Infrastructure
 created: '2026-07-23'
 modified: '2026-07-23'
-specificationVersion: '0.19'
+specificationVersion: '0.23'
 apis:
 - aid: interac:interac-hub-verification-api
   name: Interac Hub Verification API
