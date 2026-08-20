@@ -23,6 +23,16 @@ description: >-
   financial institution.
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
 tags:
+- Financial-Services
+- Payments
+- Canada
+- Interac
+- Digital Identity
+- Verification
+- Open Banking
+- Consumer-Driven Banking
+- Infrastructure
+tags_raw:
 - Financial Services
 - Payments
 - Canada
