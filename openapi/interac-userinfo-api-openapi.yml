@@ -1,0 +1,1014 @@
+openapi: 3.2.0
+info:
+  title: Interac User Info API
+  contact:
+    name: SecureKey Technologies, Office of the CTO.
+  license:
+    name: Copyright SecureKey Technologies Inc. This file contains software code and related documentation that is the intellectual property of SecureKey. SecureKey reserves all rights in the code and related documentation. You may not use it without written permission from SecureKey.
+  version: '1.0'
+  description: 'Operations tagged UserInfo across 3 of this provider''s published API definitions: interac-securekey-hub-2.yml, interac-securekey-hub-3.yml, interac-securekey-hub.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://gateway-portal.hub-verify.innovation.interac.ca/.well-known/openid-configuration
+  description: Sandbox
+- url: https://gateway-preprod.pp.vids.dev
+  description: Preprod
+tags:
+- name: UserInfo
+  description: User Info
+paths:
+  /userinfo:
+    get:
+      tags:
+      - UserInfo
+      summary: Get user information
+      description: 'Get user info endpoint. The user claims are returned as JSON.  These user claims are determined by the OIDC scope and digital asset bundles/user claims defined during onboarding.
+
+        '
+      operationId: UserInfo
+      parameters:
+      - in: header
+        name: Authorization
+        required: true
+        schema:
+          type: string
+          example: Bearer Y5MQMpfNZ9bYDeQmDMLbw0xNzGrQukfMY5MQMpfNZ9bYDeQmDMLbw0xNzGrQukfM
+      responses:
+        '200':
+          description: '200 OK. Possible schemas base on flow mode:'
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/UserInfo_VmeSuccess'
+                - $ref: '#/components/schemas/UserInfo_DocSuccess'
+                - $ref: '#/components/schemas/UserInfo_DocOrVme_Failed'
+                - $ref: '#/components/schemas/UserInfo_Dual_FullResult_Success'
+                - $ref: '#/components/schemas/UserInfo_Dual_PartialResult'
+        '202':
+          description: In case of async results delivery (through polling) when not all data is available yet.
+          headers:
+            Retry-After:
+              description: The number of seconds to wait before making the next request.
+              schema:
+                type: integer
+              example: 10
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Polling_Not_Ready'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidErrorMessage'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/UnauthorizedErrorMessage'
+                - $ref: '#/components/schemas/Polling_Job_Failed'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenErrorMessage'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    servers:
+    - url: https://gateway-portal.hub-verify.innovation.interac.ca/.well-known/openid-configuration
+      description: Sandbox
+components:
+  schemas:
+    UserInfo_Dual_PartialResult:
+      description: UserInfo response for partial verification on DualMode when Document was failed/cancelled
+      type: object
+      required:
+      - sub
+      - given_name
+      - family_name
+      - birthdate
+      - com.securekey.verified.me
+      - com.securekey.vids
+      - com.securekey.matching
+      properties:
+        sub:
+          type: string
+          example: ci48eVW6WC18Fl9oxYuU-s7H4G42MzbpUVoIitG-Hbg
+        given_name:
+          type: string
+          example: John
+        family_name:
+          type: string
+          example: Doe
+        birthdate:
+          $ref: '#/components/schemas/LocalDate'
+        com.securekey.verified.me:
+          oneOf:
+          - $ref: '#/components/schemas/Dual_VmeSuccess'
+          - $ref: '#/components/schemas/Dual_VmeFailed'
+        com.securekey.vids:
+          oneOf:
+          - $ref: '#/components/schemas/Dual_DocFailed'
+          - $ref: '#/components/schemas/Dual_DocSuccess'
+        com.securekey.matching:
+          oneOf:
+          - $ref: '#/components/schemas/Dual_MatchingFailed'
+          - $ref: '#/components/schemas/Dual_MatchingResult'
+    Polling_Not_Ready:
+      type: object
+      description: In case of asynchronous result delivery, until all data are ready,  the response body will include metadata regarding what additional information is pending.
+      properties:
+        state:
+          type: string
+          description: Current state of verification
+          enum:
+          - IN_PROGRESS
+          - PROCESSING
+        verifications:
+          type: object
+          description: Current state of each verification step of the Job
+          properties:
+            document:
+              $ref: '#/components/schemas/JobVerificationState'
+            vme:
+              $ref: '#/components/schemas/JobVerificationState'
+            matching:
+              $ref: '#/components/schemas/JobVerificationState'
+            bor:
+              $ref: '#/components/schemas/JobVerificationState'
+      required:
+      - state
+      - verifications
+    DocumentFailReason:
+      type: string
+      enum:
+      - USER_CANCELED
+      - SYSTEM_ERROR
+      - REJECTED
+      - SUSPECTED
+    LocalDate:
+      type: string
+      pattern: ^[0-9]{4}(-[0-9]{2}-[0-9]{2})?$
+      example: '1990-01-01'
+    Dual_VmeSuccess:
+      description: Vme claims in DualMode userinfo.
+      allOf:
+      - $ref: '#/components/schemas/Base_VmeSuccess'
+      - type: object
+        required:
+        - ui_locale
+        properties:
+          ui_locale:
+            $ref: '#/components/schemas/Locale'
+    FailReason:
+      type: string
+      enum:
+      - NO_VME_CLAIMS
+      - NO_DOCUMENT_CLAIMS
+      - NO_REQUEST_SUBJECT_CLAIMS
+      - MATCH_FAILED
+      - DOCUMENT_WITH_RESULT_NOT_CLEAR
+      - SYSTEM_ERROR
+      - USER_CANCELED
+      - REJECTED
+      - SUSPECTED
+    IdentityData:
+      type: object
+      required:
+      - leftDigitalIdentity
+      - rightDigitalIdentity
+      properties:
+        leftDigitalIdentity:
+          type: string
+          enum:
+          - com.securekey.vids
+          - com.securekey.verified.me
+          example: com.securekey.verified.me
+        rightDigitalIdentity:
+          type: string
+          enum:
+          - com.securekey.vids
+          - com.securekey.verified.me
+          example: com.securekey.vids
+    UserInfo_Dual_FullResult_Success:
+      description: UserInfo response for success verification on DualMode (Full)
+      type: object
+      required:
+      - sub
+      - given_name
+      - family_name
+      - birthdate
+      - com.securekey.verified.me
+      - com.securekey.vids
+      - com.securekey.matching
+      properties:
+        sub:
+          type: string
+          example: ci48eVW6WC18Fl9oxYuU-s7H4G42MzbpUVoIitG-Hbg
+        given_name:
+          type: string
+          example: John
+        family_name:
+          type: string
+          example: Doe
+        birthdate:
+          $ref: '#/components/schemas/LocalDate'
+        com.securekey.verified.me:
+          $ref: '#/components/schemas/Dual_VmeSuccess'
+        com.securekey.vids:
+          $ref: '#/components/schemas/Dual_DocSuccess'
+        com.securekey.matching:
+          $ref: '#/components/schemas/Dual_MatchingResult'
+    ForbiddenErrorMessage:
+      description: Format for error messages
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: string
+          example: forbidden
+        error_description:
+          type: string
+          example: Forbidden
+    JobVerificationState:
+      description: Contains state of single verification performed in the scope of the job
+      type: object
+      properties:
+        state:
+          type: string
+          enum:
+          - BLOCKED
+          - NOT_STARTED
+          - STARTED
+          - DATA_CAPTURE
+          - DATA_PROCESSING
+          - SUCCESS
+          - CANCELLED
+          - FAILED
+        fail_reason:
+          $ref: '#/components/schemas/FailReason'
+        fail_description:
+          type: string
+          description: Detailed explanation of the reason for verification failure. Populated only when the verification is unsuccessful.
+      required:
+      - state
+    VmeFailReason:
+      type: string
+      enum:
+      - USER_CANCELED
+      - SYSTEM_ERROR
+    UserInfo_DocOrVme_Failed:
+      description: Failed verification userinfo. Not applicable to DualMode.
+      type: object
+      required:
+      - fail_reason
+      - fail_description
+      properties:
+        fail_reason:
+          $ref: '#/components/schemas/DocumentFailReason'
+        fail_description:
+          type: string
+          example: User canceled transaction
+    InvalidErrorMessage:
+      description: Format for error messages
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: string
+          example: invalid_request
+        error_description:
+          type: string
+          example: 'the request could not be processed because a required parameter was missing: {details}'
+    GenericError:
+      description: The standard error format
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: string
+          example: server_error
+        error_description:
+          type: string
+          example: Failed to process request because of unexpected error
+    UserInfo_DocSuccess:
+      description: Userinfo for successful document claims
+      allOf:
+      - $ref: '#/components/schemas/Base_DocSuccess'
+      - $ref: '#/components/schemas/Bor_Fields'
+      - type: object
+        required:
+        - com.securekey.vids.job_id
+        - scan_result
+        properties:
+          com.securekey.vids.job_id:
+            type: string
+            example: 4aa2e0dc889045edb251e584d1d3b7f8
+    Dual_MatchingResult:
+      description: Matching result in DualMode userinfo.
+      type: object
+      required:
+      - matchStatus
+      - matchData
+      - identityData
+      properties:
+        matchStatus:
+          type: string
+          enum:
+          - CLEAR
+          - REJECTED
+          example: CLEAR
+        matchData:
+          $ref: '#/components/schemas/MatchData'
+        identityData:
+          $ref: '#/components/schemas/IdentityData'
+    Dual_MatchingFailed:
+      description: Failed matching in DualMode userinfo.
+      type: object
+      required:
+      - fail_reason
+      - fail_description
+      properties:
+        fail_reason:
+          $ref: '#/components/schemas/MatchingFailReason'
+        fail_description:
+          type: string
+          example: 'Error during data matching processing. Err: Claims does not exist'
+        matchStatus:
+          type: string
+          enum:
+          - CLEAR
+          - REJECTED
+          example: REJECTED
+        matchData:
+          $ref: '#/components/schemas/MatchData'
+        identityData:
+          $ref: '#/components/schemas/IdentityData'
+    Polling_Job_Failed:
+      type: object
+      description: In case of asynchronous result delivery, when all data are ready, but the verification has failed,  the response body will include error details and info about each verifier's state.
+      properties:
+        error:
+          type: string
+          description: General reason for job failure
+        error_description:
+          type: string
+          description: Detailed explanation of the reason for job failure.
+        verifications:
+          type: object
+          description: Current state of each verification step of the Job
+          properties:
+            document:
+              $ref: '#/components/schemas/JobVerificationState'
+            vme:
+              $ref: '#/components/schemas/JobVerificationState'
+            matching:
+              $ref: '#/components/schemas/JobVerificationState'
+            bor:
+              $ref: '#/components/schemas/JobVerificationState'
+      required:
+      - error
+      - error_description
+      - verifications
+    Dual_VmeFailed:
+      description: Failed Verify.Me verification in DualMode userinfo.
+      type: object
+      required:
+      - fail_reason
+      - fail_description
+      properties:
+        fail_reason:
+          $ref: '#/components/schemas/VmeFailReason'
+        fail_description:
+          type: string
+          example: User canceled transaction
+    Locale:
+      type: string
+      enum:
+      - en-CA
+      - fr-CA
+      example: en-CA
+    Dual_DocSuccess:
+      description: Document claims in successful DualMode userinfo.
+      allOf:
+      - $ref: '#/components/schemas/Base_DocSuccess'
+      - type: object
+        required:
+        - jobId
+        properties:
+          jobId:
+            type: string
+            example: 4aa2e0dc889045edb251e584d1d3b7f8
+    MatchingFailReason:
+      type: string
+      enum:
+      - NO_VME_CLAIMS
+      - NO_DOCUMENT_CLAIMS
+      - NO_REQUEST_SUBJECT_CLAIMS
+      - MATCH_FAILED
+      - DOCUMENT_WITH_RESULT_NOT_CLEAR
+      - SYSTEM_ERROR
+    Address:
+      description: Address
+      type: object
+      required:
+      - street_address
+      - locality
+      - region
+      - postal_code
+      - country
+      properties:
+        street_address:
+          type: string
+          example: 4101 Yonge Suite 501
+        locality:
+          type: string
+          example: TORONTO
+        region:
+          type: string
+          example: 'ON'
+        postal_code:
+          type: string
+          example: M2P 1N6
+        country:
+          type: string
+          example: CAN
+    Base_VmeSuccess:
+      description: Base Vme claims.
+      type: object
+      required:
+      - sub
+      - license_id
+      - given_name
+      - family_name
+      additionalProperties: true
+      properties:
+        dacPseudonym:
+          type: string
+          example: tybIYC2FvIPprK_dIhXgaxP8jOXRfT8srWWR0K42-1s
+        sub:
+          type: string
+          example: tybIYC2FvIPprK_dIhXgaxP8jOXRfT8srWWR0K42-1s
+        com.securekey.verified.me.license_id:
+          type: string
+          example: -ngpVkiAzJKpKws3ibMwgPqT_aY5Qf5oYP-bkykK39M
+        source:
+          type: string
+          example: bank
+        address:
+          $ref: '#/components/schemas/Address'
+        birthdate:
+          $ref: '#/components/schemas/LocalDate'
+        phone_number:
+          type: string
+          example: '16045555555'
+        given_name:
+          type: string
+          example: John
+        family_name:
+          type: string
+          example: Doe
+        email:
+          type: string
+          format: email
+          example: jdoe8@securekey.com
+    AddressMissed:
+      description: No Address information
+      allOf:
+      - $ref: '#/components/schemas/Address'
+      - type: object
+        properties:
+          street_address:
+            type: string
+            example: N/A
+          locality:
+            type: string
+            example: N/A
+          region:
+            type: string
+            example: N/A
+          postal_code:
+            type: string
+            example: N/A
+          country:
+            type: string
+            example: N/A
+    Bor_Fields:
+      type: object
+      properties:
+        bor_data:
+          type: object
+          description: BoR data. Only present if BoR is enabled and was run based on the client config.
+          required:
+          - check_result
+          - source
+          properties:
+            check_result:
+              type: string
+              enum:
+              - PASS
+              - FAIL
+              - UNKNOWN
+              description: Result of the BoR check
+            source:
+              type: string
+              description: Source of the BoR check, should always be 'ODS'
+              example: ODS
+            reason:
+              type: string
+              enum:
+              - PII_CLAIMS_ERROR
+              - CLIENT_CONFIG_ERROR
+              - ODS_ERROR
+              - UNKNOWN_ERROR
+              - MISSING_HEADER
+              - INTERNAL_SERVER_ERROR
+              - VALIDATION_FAILED
+              - INVALID_CARD_NUMBER
+              - INVALID_DOCUMENT_CONTROL_NUMBER
+              - INVALID_LAST_NAME
+              - INVALID_DATE_OF_BIRTH
+              - INVALID_POSTAL_CODE
+              - INVALID_VERSION_CODE
+              - INVALID_STOCK_CONTROL_NUMBER
+              - INVALID_NAME
+              - INVALID_ISSUE_DATE
+              - INVALID_EXPIRY_DATE
+              - FAILURE_LIMIT_EXCEEDED
+              description: Reason for error, only present if check_status is "UNKNOWN" or "FAIL"
+    MatchData:
+      type: object
+      required:
+      - given_name_score
+      - family_name_score
+      - birthdate_score
+      - matchScore
+      - matchThreshold
+      properties:
+        given_name_score:
+          type: number
+          example: 80
+        family_name_score:
+          type: number
+          example: 100
+        birthdate_score:
+          type: number
+          example: 100
+        matchScore:
+          type: number
+          example: 90
+        matchThreshold:
+          type: number
+          example: 65
+    UserInfo_VmeSuccess:
+      description: 'Userinfo for successful Verify.Me claims. VMe results. Omitted if hidePII is enabled during a matching flow.
+
+
+        Different digital asset bundles (i.e user claims) can be subscribed to depending on the partner agreement and can be referenced [Published DA](https://kb.securekey.com/display/VMEINT/Published+DA) (internal KB, access restricted).
+
+        '
+      allOf:
+      - $ref: '#/components/schemas/Base_VmeSuccess'
+      - type: object
+        properties:
+          com.securekey.verified.me.ui_locale:
+            $ref: '#/components/schemas/Locale'
+    Base_DocSuccess:
+      description: Base Document results. Omitted if hidePII is enabled during a matching flow.
+      type: object
+      required:
+      - sub
+      - source
+      - doc_type
+      - given_name
+      - family_name
+      - birthdate
+      - address
+      - issue_date
+      - expiry_date
+      - nationality
+      - doc_number
+      - issuing_country
+      - issuing_authority
+      - com.securekey.verified.me.ui_locale
+      - scan_result
+      properties:
+        sub:
+          type: string
+          example: 4aa2e0dc889045edb251e584d1d3b7f8
+        source:
+          type: string
+          description: Onfido doc type
+          example: national_health_insurance_card
+        doc_type:
+          type: string
+          description: HUB doc type
+          enum:
+          - passport
+          - drivers_license
+          - health_card
+          - national_card
+          - resident_permit
+          - indigenous_card
+          example: health_card
+        given_name:
+          type: string
+          example: JOHN
+        family_name:
+          type: string
+          example: DOE
+        birthdate:
+          $ref: '#/components/schemas/LocalDate'
+        address:
+          oneOf:
+          - $ref: '#/components/schemas/Address'
+          - $ref: '#/components/schemas/AddressMissed'
+        issue_date:
+          $ref: '#/components/schemas/LocalDate'
+        expiry_date:
+          $ref: '#/components/schemas/LocalDate'
+        nationality:
+          type: string
+          example: CAN
+        doc_number:
+          type: string
+          example: ZE000509
+        issuing_country:
+          type: string
+          example: CA
+        issuing_authority:
+          type: string
+          example: CA
+        phone_number:
+          type: string
+          description: optional
+          example: '16045555555'
+        com.securekey.verified.me.ui_locale:
+          $ref: '#/components/schemas/Locale'
+        scan_result:
+          type: string
+          enum:
+          - CLEAR
+          - REJECTED
+          - SUSPECTED
+          example: CLEAR
+        rejected_flags:
+          type: array
+          items:
+            type: string
+          description: ' Provided when a document scan fails due to rejection, and `document.allowPartialResult` is set to `true`. Details the reasons for the document being flagged as `rejected`'
+          example:
+          - image_quality
+          - conclusive_document_quality
+          - supported_document
+          - minimum_accepted_age
+          - colour_picture
+          - data_consistency
+          - document_expiration
+          - face_detection
+          - filtered_document
+          - face_detected
+        suspected_flags:
+          type: array
+          items:
+            type: string
+          description: ' Provided when a document scan fails due to suspicion, and `document.allowPartialResult` is `true`.  Details the reasons for the document being flagged as `suspected`.'
+          example:
+          - compromised_document
+          - data_consistency
+          - visual_authenticity
+          - data_validation
+          - source_integrity
+          - face_match
+          - spoofing_detection
+    Dual_DocFailed:
+      description: Failed document verification in DualMode userinfo.
+      type: object
+      required:
+      - fail_reason
+      - fail_description
+      properties:
+        fail_reason:
+          $ref: '#/components/schemas/DocumentFailReason'
+        fail_description:
+          type: string
+          example: User canceled transaction
+    UnauthorizedErrorMessage:
+      description: Format for error messages
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: string
+          example: unauthorized
+        error_description:
+          type: string
+          example: Unauthorized
+    RejectedFlags:
+      type: array
+      items:
+        type: string
+      example:
+      - image_quality
+      - conclusive_document_quality
+      - supported_document
+      - minimum_accepted_age
+      - colour_picture
+      - data_consistency
+      - document_expiration
+      - face_detection
+      - filtered_document
+      - face_detected
+    GenericError_2:
+      description: The standard error format
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: string
+          example: internal_server_error
+        error_description:
+          type: string
+          example: Server Error
+    UserInfo_DocSuccess_2:
+      description: Userinfo for document claims.
+      allOf:
+      - $ref: '#/components/schemas/Base_DocSuccess_2'
+      - type: object
+        required:
+        - com.securekey.vids.job_id
+        properties:
+          com.securekey.vids.job_id:
+            type: string
+            example: 4aa2e0dc889045edb251e584d1d3b7f8
+    Dual_MatchingFailed_2:
+      description: Failed matching in DualMode userinfo.
+      type: object
+      required:
+      - fail_reason
+      - fail_description
+      properties:
+        fail_reason:
+          type: string
+          enum:
+          - NO_VME_CLAIMS
+          - NO_DOCUMENT_CLAIMS
+          - MATCH_FAILED
+          - SYSTEM_ERROR
+          example: NO_DOCUMENT_CLAIMS
+        fail_description:
+          type: string
+          example: 'Error during data matching processing. Err: Claims does not exist'
+        matchStatus:
+          type: string
+          enum:
+          - CLEAR
+          - REJECTED
+          example: REJECTED
+        matchData:
+          $ref: '#/components/schemas/MatchData'
+        identityData:
+          $ref: '#/components/schemas/IdentityData'
+    Dual_VmeFailed_2:
+      description: Failed Verify.Me verification in DualMode userinfo.
+      type: object
+      required:
+      - fail_reason
+      - fail_description
+      properties:
+        fail_reason:
+          type: string
+          enum:
+          - USER_CANCELED
+          - SYSTEM_ERROR
+          example: USER_CANCELED
+        fail_description:
+          type: string
+          example: User canceled transaction
+    Dual_DocSuccess_2:
+      description: Document claims in DualMode userinfo.
+      allOf:
+      - $ref: '#/components/schemas/Base_DocSuccess_2'
+      - type: object
+        required:
+        - jobId
+        properties:
+          jobId:
+            type: string
+            example: 4aa2e0dc889045edb251e584d1d3b7f8
+    Base_VmeSuccess_2:
+      description: Base Vme claims.
+      type: object
+      required:
+      - sub
+      - license_id
+      - source
+      - given_name
+      - family_name
+      additionalProperties: true
+      properties:
+        dacPseudonym:
+          type: string
+          example: tybIYC2FvIPprK_dIhXgaxP8jOXRfT8srWWR0K42-1s
+        sub:
+          type: string
+          example: tybIYC2FvIPprK_dIhXgaxP8jOXRfT8srWWR0K42-1s
+        license_id:
+          type: string
+          example: -ngpVkiAzJKpKws3ibMwgPqT_aY5Qf5oYP-bkykK39M
+        source:
+          type: string
+          example: bank
+        address:
+          $ref: '#/components/schemas/Address'
+        birthdate:
+          $ref: '#/components/schemas/LocalDate'
+        phone_number:
+          type: string
+          example: '+16045555555'
+        given_name:
+          type: string
+          example: John
+        family_name:
+          type: string
+          example: Doe
+        email:
+          type: string
+          format: email
+          example: jdoe8@securekey.com
+    UserInfo_DocSuspected:
+      description: 'Userinfo on document clear/suspected/rejected as HUB 2.2 Feature - Always return document scan data to client (works with config: document.allowPartialResult=true). Document fields can have ''N/A'' value'
+      allOf:
+      - $ref: '#/components/schemas/Base_DocSuccess_2'
+      - type: object
+        required:
+        - com.securekey.vids.job_id
+        - suspected_flags
+        - scan_result
+        properties:
+          com.securekey.vids.job_id:
+            type: string
+            example: 4aa2e0dc889045edb251e584d1d3b7f8
+          suspected_flags:
+            $ref: '#/components/schemas/SuspectedFlags'
+          scan_result:
+            type: string
+            enum:
+            - CLEAR
+            - REJECTED
+            - SUSPECTED
+            example: SUSPECTED
+    SuspectedFlags:
+      type: array
+      items:
+        type: string
+      example:
+      - compromised_document
+      - data_consistency
+      - visual_authenticity
+      - data_validation
+      - source_integrity
+      - face_match
+      - spoofing_detection
+    UserInfo_VmeSuccess_2:
+      description: Userinfo for Verify.Me claims.
+      allOf:
+      - $ref: '#/components/schemas/Base_VmeSuccess_2'
+      - type: object
+        required:
+        - com.securekey.verified.me.ui_locale
+        properties:
+          com.securekey.verified.me.ui_locale:
+            $ref: '#/components/schemas/Locale'
+    Base_DocSuccess_2:
+      description: Base model of document claims.
+      type: object
+      required:
+      - com.securekey.verified.me.ui_locale
+      - sub
+      - source
+      - doc_type
+      - given_name
+      - family_name
+      - birthdate
+      - address
+      - issue_date
+      - expiry_date
+      - nationality
+      - doc_number
+      - issuing_country
+      - issuing_authority
+      properties:
+        com.securekey.verified.me.ui_locale:
+          $ref: '#/components/schemas/Locale'
+        sub:
+          type: string
+          example: 4aa2e0dc889045edb251e584d1d3b7f8
+        source:
+          type: string
+          description: Onfido doc type
+          example: national_health_insurance_card
+        doc_type:
+          type: string
+          description: HUB doc type
+          enum:
+          - passport
+          - drivers_license
+          - health_card
+          - national_card
+          - resident_permit
+          example: health_card
+        given_name:
+          type: string
+          example: JOHN
+        family_name:
+          type: string
+          example: DOE
+        birthdate:
+          $ref: '#/components/schemas/LocalDate'
+        address:
+          oneOf:
+          - $ref: '#/components/schemas/Address'
+          - $ref: '#/components/schemas/AddressMissed'
+        issue_date:
+          $ref: '#/components/schemas/LocalDate'
+        expiry_date:
+          $ref: '#/components/schemas/LocalDate'
+        nationality:
+          type: string
+          example: CAN
+        doc_number:
+          type: string
+          example: ZE000509
+        issuing_country:
+          type: string
+          example: CA
+        issuing_authority:
+          type: string
+          example: CA
+        phone_number:
+          type: string
+          description: optional
+          example: +1 604 555 5555
+    Dual_DocFailed_2:
+      description: Failed document verification in DualMode userinfo.
+      type: object
+      required:
+      - fail_reason
+      - fail_description
+      properties:
+        fail_reason:
+          type: string
+          enum:
+          - USER_CANCELED
+          - SYSTEM_ERROR
+          - REJECTED
+          - SUSPECTED
+          example: USER_CANCELED
+        fail_description:
+          type: string
+          example: User canceled transaction
+    UserInfo_DocRejected:
+      description: 'Userinfo on document clear/suspected/rejected as HUB 2.2 Feature - Always return document scan data to client (works with config: document.allowPartialResult=true). Document fields can have ''N/A'' value'
+      allOf:
+      - $ref: '#/components/schemas/Base_DocSuccess_2'
+      - type: object
+        required:
+        - com.securekey.vids.job_id
+        - rejected_flags
+        - scan_result
+        properties:
+          com.securekey.vids.job_id:
+            type: string
+            example: 4aa2e0dc889045edb251e584d1d3b7f8
+          rejected_flags:
+            $ref: '#/components/schemas/RejectedFlags'
+          scan_result:
+            type: string
+            enum:
+            - CLEAR
+            - REJECTED
+            - SUSPECTED
+            example: REJECTED
+  responses:
+    InternalServerError:
+      description: 'Internal Server Error. Returned when request was not processed because of an unexpected/unknown error.
+
+        '
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenericError'
+x-refined-from:
+- interac-securekey-hub-2.yml
+- interac-securekey-hub-3.yml
+- interac-securekey-hub.yml
