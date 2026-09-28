@@ -1,0 +1,796 @@
+openapi: 3.0.1
+info:
+  title: SecureKey Hub
+  description: The Hub RP API provided by SecureKey
+  contact:
+    name: SecureKey Technologies, Office of the CTO.
+  license:
+    name: Copyright SecureKey Technologies Inc. This file contains software code and related documentation
+      that is the intellectual property of SecureKey. SecureKey reserves all rights in the code and related
+      documentation. You may not use it without written permission from SecureKey.
+  version: 2.0.0
+  x-source-url: https://dash.readme.com/api/v1/api-registry/4u7n1al4yo8mr0
+  x-documentation-url: https://documents.hub-verify.innovation.interac.ca/docs/31-api-endpoints
+  x-last-validated: '2026-08-10'
+  x-provenance: first-party — retrieved from the provider's own documentation host
+servers:
+- url: https://gateway-preprod.pp.vids.dev
+  description: Preprod
+tags:
+- name: OAuth2
+  description: OAuth2 endpoints.
+- name: UserInfo
+  description: User Info
+paths:
+  /oauth2/auth:
+    get:
+      tags:
+      - OAuth2
+      description: 'To learn more about this endpoint, please refer to the specification: https://tools.ietf.org/html/rfc6749'
+      summary: Authorization endpoint
+      parameters:
+      - in: query
+        name: request
+        required: false
+        schema:
+          type: string
+          example: eyJraWQiOiJzaWdrZXkxIiwiYWxnIjoiUlMyNTYifQ.eyJhdWQiOiJodHRwczpcL1wvaHViLWRldi1oeWRyYS5za2Rldi5jYVwvIiwidWlfbG9jYWxlcyI6ImVuLUNBIiwic2NvcGUiOiJvcGVuaWQgZG9jdW1lbnRfc2NvcGUiLCJpc3MiOiJodWItY2xpZW50IiwicmVzcG9uc2VfdHlwZSI6ImNvZGUiLCJyZWRpcmVjdF91cmkiOiJodHRwczpcL1wvaHViLWRldi1jbGllbnQuc2tkZXYuY2FcL29pZGMiLCJzdGF0ZSI6ImZyNml4TkFGajN3S25NNGc5ODQ4bGtUV1NNQlMzOGdLIiwiY29kZV9jaGFsbGVuZ2VfbWV0aG9kIjoiUzI1NiIsImNsaWVudF9pZCI6Imh1Yi1jbGllbnQiLCJjb2RlX2NoYWxsZW5nZSI6IjlFR1RiRU1Nck1FcVVaakFfOU96M1d4cEZSM2lncmV6c081T1dvb1Q1Q2cifQ.foNX4TVWXuAkNa-s11qV5DjKSVXUhshGDjf0JYipQQBTb36gUg4h7zWx2dxLYKZUKxETuO6Tp2NjTsSdBVz3dUCUQtlEj40fNAqJuqCRJg492PolYySkKM_YNPJHJPb4RPdWqK0wQigAHIztwu7w-5q-IlfNDDvLZ2UQChmMnCbQ4W4AhqWt83tdUgDX8eSrWmA1Aq3u5zfDFY9LXrXr1gy-FWXUZQNcwJMf3GsYxVNzq3xDiGgCDxoPicpE7uKPkhcJ1AquJd1DFG-ZTgearaVK-Wl281V4BP1YpYTpBuk04lnMpMQm5lpcXKchpCsSvEukczb2oq5vYh1OW1Gtgg
+      - in: query
+        name: scope
+        required: true
+        schema:
+          type: string
+          example: openid document_scope
+      - in: query
+        name: response_type
+        required: true
+        schema:
+          type: string
+          example: code
+      - in: query
+        name: redirect_uri
+        required: true
+        schema:
+          type: string
+          example: https://harness-preprod.pp.vids.dev/oidc
+      - in: query
+        name: state
+        required: true
+        schema:
+          type: string
+          example: fr6ixNAFj3wKnM4g9848lkTWSMBS38gK
+      - in: query
+        name: client_id
+        required: true
+        schema:
+          type: string
+          example: hub-client
+      - in: query
+        name: ui_locales
+        required: false
+        schema:
+          $ref: '#/components/schemas/Locale'
+      operationId: oauthAuth
+      responses:
+        '302':
+          description: 'Redirects to HUB UI application or back to RP on invalid request.
+
+
+            Empty responses are sent when, for example, resources are deleted. The HTTP status code for
+            empty responses is
+
+            typically 201.'
+          content: {}
+          headers:
+            Location:
+              description: URI where the client can start the flow
+              schema:
+                type: string
+              examples:
+                302Redirect:
+                  description: Redirect to HUB-UI
+                  value: https://ui-preprod.pp.vids.dev/oidc-login?authId=2d31b594-9b00-4ed2-b94b-a65ba349c299&locale=en-CA302Redirect
+                302RedirectOnError:
+                  description: Redirect back to client on invalid parameters (scope, redirect_uri, etc)
+                  value: https://harness-preprod.pp.vids.dev/hub-mode?error=invalid_scope&error_description=The+requested+scope+is+invalid%2C+unknown%2C+or+malformed.+The+OAuth+2.0+Client+is+not+allowed+to+request+scope+%27idv-authbasic%27.&locale=en-CA&state=qckoXBA6aJ6zOzp2ZuEuglRSyzSBRZLR
+                302RedirectOnIncorrectRequest:
+                  description: Redirect to HUB-UI Error page if request is incorrect
+                  value: https://harness-preprod.pp.vids.dev/error?error=invalid_request&error_description=Response++is+not+supported
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorMessage'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+  /oauth2/token:
+    post:
+      tags:
+      - OAuth2
+      summary: Obtain access token
+      description: For more information, please refer to https://tools.ietf.org/html/rfc6749#section-4
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OauthTokenRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OauthTokenResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidErrorMessage'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorMessage'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+  /userinfo:
+    get:
+      tags:
+      - UserInfo
+      description: Get user info
+      summary: Get user information
+      operationId: UserInfo
+      parameters:
+      - in: header
+        name: Authorization
+        required: true
+        schema:
+          type: string
+          example: Bearer Y5MQMpfNZ9bYDeQmDMLbw0xNzGrQukfMY5MQMpfNZ9bYDeQmDMLbw0xNzGrQukfM
+      responses:
+        '200':
+          description: '200 OK. Possible schemas base on flow mode:'
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/UserInfo_VmeSuccess'
+                - $ref: '#/components/schemas/UserInfo_DocSuccess'
+                - $ref: '#/components/schemas/UserInfo_DocSuspected'
+                - $ref: '#/components/schemas/UserInfo_DocRejected'
+                - $ref: '#/components/schemas/UserInfo_Dual_FullResult_Success'
+                - $ref: '#/components/schemas/UserInfo_Dual_PartialResult'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidErrorMessage'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedErrorMessage'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenErrorMessage'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+        x-200-vme-success:
+          description: '200 OK / Verify.Me flow: Success'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfo_VmeSuccess'
+        x-200-doc-clear:
+          description: '200 OK Document flow: Success'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfo_DocSuccess'
+        x-200-doc-suspected:
+          description: '200 OK Document flow: SUSPECTED'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfo_DocSuspected'
+        x-200-doc-rejected:
+          description: '200 OK Document flow: REJECTED'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfo_DocRejected'
+        x-200-dual-full:
+          description: '200 OK Dual mode flow: Success'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfo_Dual_FullResult_Success'
+        x-200-dual-partial:
+          description: '200 OK Dual mode flow: Partially success'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfo_Dual_PartialResult'
+components:
+  schemas:
+    OauthTokenRequest:
+      description: Token request
+      type: object
+      required:
+      - grant_type
+      properties:
+        grant_type:
+          type: string
+          example: authorization_code
+        code:
+          type: string
+          example: 59ofWg_UxbEJbL5Dd84PPWg-u3nT_6KjvuDdaTqVWPE.5v0uPsMClMuPnX_PgeW1rICohE61pJs-SMJqjJzhWtY
+        redirect_uri:
+          type: string
+          example: https://harness-preprod.pp.vids.dev/oidc
+        client_id:
+          type: string
+          example: harness-client-id
+    OauthTokenResponse:
+      description: Token response
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: SlAV32hkKG
+        expires_in:
+          type: integer
+          example: 3600
+        id_token:
+          type: string
+          example: eyJhbGciOiJSUzI1NiIsImtpZCI6IjFlOWdkazcifQ
+        refresh_token:
+          type: string
+          example: 8xLOxBtZp8
+        scope:
+          type: string
+        token_type:
+          type: string
+          example: Bearer
+    UserInfo_VmeSuccess:
+      description: Userinfo for Verify.Me claims.
+      allOf:
+      - $ref: '#/components/schemas/Base_VmeSuccess'
+      - type: object
+        required:
+        - com.securekey.verified.me.ui_locale
+        properties:
+          com.securekey.verified.me.ui_locale:
+            $ref: '#/components/schemas/Locale'
+    UserInfo_DocSuccess:
+      description: Userinfo for document claims.
+      allOf:
+      - $ref: '#/components/schemas/Base_DocSuccess'
+      - type: object
+        required:
+        - com.securekey.vids.job_id
+        properties:
+          com.securekey.vids.job_id:
+            type: string
+            example: 4aa2e0dc889045edb251e584d1d3b7f8
+    UserInfo_DocSuspected:
+      description: 'Userinfo on document clear/suspected/rejected as HUB 2.2 Feature - Always return document
+        scan data to client (works with config: document.allowPartialResult=true). Document fields can
+        have ''N/A'' value'
+      allOf:
+      - $ref: '#/components/schemas/Base_DocSuccess'
+      - type: object
+        required:
+        - com.securekey.vids.job_id
+        - suspected_flags
+        - scan_result
+        properties:
+          com.securekey.vids.job_id:
+            type: string
+            example: 4aa2e0dc889045edb251e584d1d3b7f8
+          suspected_flags:
+            $ref: '#/components/schemas/SuspectedFlags'
+          scan_result:
+            type: string
+            enum:
+            - CLEAR
+            - REJECTED
+            - SUSPECTED
+            example: SUSPECTED
+    UserInfo_DocRejected:
+      description: 'Userinfo on document clear/suspected/rejected as HUB 2.2 Feature - Always return document
+        scan data to client (works with config: document.allowPartialResult=true). Document fields can
+        have ''N/A'' value'
+      allOf:
+      - $ref: '#/components/schemas/Base_DocSuccess'
+      - type: object
+        required:
+        - com.securekey.vids.job_id
+        - rejected_flags
+        - scan_result
+        properties:
+          com.securekey.vids.job_id:
+            type: string
+            example: 4aa2e0dc889045edb251e584d1d3b7f8
+          rejected_flags:
+            $ref: '#/components/schemas/RejectedFlags'
+          scan_result:
+            type: string
+            enum:
+            - CLEAR
+            - REJECTED
+            - SUSPECTED
+            example: REJECTED
+    UserInfo_Dual_FullResult_Success:
+      description: UserInfo response for success verification on DualMode (Full)
+      type: object
+      required:
+      - sub
+      - given_name
+      - family_name
+      - birthdate
+      - com.securekey.verified.me
+      - com.securekey.vids
+      - com.securekey.matching
+      properties:
+        sub:
+          type: string
+          example: ci48eVW6WC18Fl9oxYuU-s7H4G42MzbpUVoIitG-Hbg
+        given_name:
+          type: string
+          example: John
+        family_name:
+          type: string
+          example: Doe
+        birthdate:
+          $ref: '#/components/schemas/LocalDate'
+        com.securekey.verified.me:
+          $ref: '#/components/schemas/Dual_VmeSuccess'
+        com.securekey.vids:
+          $ref: '#/components/schemas/Dual_DocSuccess'
+        com.securekey.matching:
+          $ref: '#/components/schemas/Dual_MatchingResult'
+    UserInfo_Dual_PartialResult:
+      description: UserInfo response for partial verification on DualMode when Document was failed/cancelled
+      type: object
+      required:
+      - sub
+      - given_name
+      - family_name
+      - birthdate
+      - com.securekey.verified.me
+      - com.securekey.vids
+      - com.securekey.matching
+      properties:
+        sub:
+          type: string
+          example: ci48eVW6WC18Fl9oxYuU-s7H4G42MzbpUVoIitG-Hbg
+        given_name:
+          type: string
+          example: John
+        family_name:
+          type: string
+          example: Doe
+        birthdate:
+          $ref: '#/components/schemas/LocalDate'
+        com.securekey.verified.me:
+          oneOf:
+          - $ref: '#/components/schemas/Dual_VmeSuccess'
+          - $ref: '#/components/schemas/Dual_VmeFailed'
+        com.securekey.vids:
+          oneOf:
+          - $ref: '#/components/schemas/Dual_DocFailed'
+          - $ref: '#/components/schemas/Dual_DocSuccess'
+        com.securekey.matching:
+          oneOf:
+          - $ref: '#/components/schemas/Dual_MatchingFailed'
+          - $ref: '#/components/schemas/Dual_MatchingResult'
+    Dual_DocSuccess:
+      description: Document claims in DualMode userinfo.
+      allOf:
+      - $ref: '#/components/schemas/Base_DocSuccess'
+      - type: object
+        required:
+        - jobId
+        properties:
+          jobId:
+            type: string
+            example: 4aa2e0dc889045edb251e584d1d3b7f8
+    Dual_DocFailed:
+      description: Failed document verification in DualMode userinfo.
+      type: object
+      required:
+      - fail_reason
+      - fail_description
+      properties:
+        fail_reason:
+          type: string
+          enum:
+          - USER_CANCELED
+          - SYSTEM_ERROR
+          - REJECTED
+          - SUSPECTED
+          example: USER_CANCELED
+        fail_description:
+          type: string
+          example: User canceled transaction
+    Base_DocSuccess:
+      description: Base model of document claims.
+      type: object
+      required:
+      - com.securekey.verified.me.ui_locale
+      - sub
+      - source
+      - doc_type
+      - given_name
+      - family_name
+      - birthdate
+      - address
+      - issue_date
+      - expiry_date
+      - nationality
+      - doc_number
+      - issuing_country
+      - issuing_authority
+      properties:
+        com.securekey.verified.me.ui_locale:
+          $ref: '#/components/schemas/Locale'
+        sub:
+          type: string
+          example: 4aa2e0dc889045edb251e584d1d3b7f8
+        source:
+          type: string
+          description: Onfido doc type
+          example: national_health_insurance_card
+        doc_type:
+          type: string
+          description: HUB doc type
+          enum:
+          - passport
+          - drivers_license
+          - health_card
+          - national_card
+          - resident_permit
+          example: health_card
+        given_name:
+          type: string
+          example: JOHN
+        family_name:
+          type: string
+          example: DOE
+        birthdate:
+          $ref: '#/components/schemas/LocalDate'
+        address:
+          oneOf:
+          - $ref: '#/components/schemas/Address'
+          - $ref: '#/components/schemas/AddressMissed'
+        issue_date:
+          $ref: '#/components/schemas/LocalDate'
+        expiry_date:
+          $ref: '#/components/schemas/LocalDate'
+        nationality:
+          type: string
+          example: CAN
+        doc_number:
+          type: string
+          example: ZE000509
+        issuing_country:
+          type: string
+          example: CA
+        issuing_authority:
+          type: string
+          example: CA
+        phone_number:
+          type: string
+          description: optional
+          example: +1 604 555 5555
+    Base_VmeSuccess:
+      description: Base Vme claims.
+      type: object
+      required:
+      - sub
+      - license_id
+      - source
+      - given_name
+      - family_name
+      additionalProperties: true
+      properties:
+        dacPseudonym:
+          type: string
+          example: tybIYC2FvIPprK_dIhXgaxP8jOXRfT8srWWR0K42-1s
+        sub:
+          type: string
+          example: tybIYC2FvIPprK_dIhXgaxP8jOXRfT8srWWR0K42-1s
+        license_id:
+          type: string
+          example: -ngpVkiAzJKpKws3ibMwgPqT_aY5Qf5oYP-bkykK39M
+        source:
+          type: string
+          example: bank
+        address:
+          $ref: '#/components/schemas/Address'
+        birthdate:
+          $ref: '#/components/schemas/LocalDate'
+        phone_number:
+          type: string
+          example: '+16045555555'
+        given_name:
+          type: string
+          example: John
+        family_name:
+          type: string
+          example: Doe
+        email:
+          type: string
+          format: email
+          example: jdoe8@securekey.com
+    Dual_VmeSuccess:
+      description: Vme claims in DualMode userinfo.
+      allOf:
+      - $ref: '#/components/schemas/Base_VmeSuccess'
+      - type: object
+        required:
+        - ui_locale
+        properties:
+          ui_locale:
+            $ref: '#/components/schemas/Locale'
+    Dual_VmeFailed:
+      description: Failed Verify.Me verification in DualMode userinfo.
+      type: object
+      required:
+      - fail_reason
+      - fail_description
+      properties:
+        fail_reason:
+          type: string
+          enum:
+          - USER_CANCELED
+          - SYSTEM_ERROR
+          example: USER_CANCELED
+        fail_description:
+          type: string
+          example: User canceled transaction
+    Dual_MatchingFailed:
+      description: Failed matching in DualMode userinfo.
+      type: object
+      required:
+      - fail_reason
+      - fail_description
+      properties:
+        fail_reason:
+          type: string
+          enum:
+          - NO_VME_CLAIMS
+          - NO_DOCUMENT_CLAIMS
+          - MATCH_FAILED
+          - SYSTEM_ERROR
+          example: NO_DOCUMENT_CLAIMS
+        fail_description:
+          type: string
+          example: 'Error during data matching processing. Err: Claims does not exist'
+        matchStatus:
+          type: string
+          enum:
+          - CLEAR
+          - REJECTED
+          example: REJECTED
+        matchData:
+          $ref: '#/components/schemas/MatchData'
+        identityData:
+          $ref: '#/components/schemas/IdentityData'
+    Dual_MatchingResult:
+      description: Matching result in DualMode userinfo.
+      type: object
+      required:
+      - matchStatus
+      - matchData
+      - identityData
+      properties:
+        matchStatus:
+          type: string
+          enum:
+          - CLEAR
+          - REJECTED
+          example: CLEAR
+        matchData:
+          $ref: '#/components/schemas/MatchData'
+        identityData:
+          $ref: '#/components/schemas/IdentityData'
+    SuspectedFlags:
+      type: array
+      items:
+        type: string
+      example:
+      - compromised_document
+      - data_consistency
+      - visual_authenticity
+      - data_validation
+      - source_integrity
+      - face_match
+      - spoofing_detection
+    RejectedFlags:
+      type: array
+      items:
+        type: string
+      example:
+      - image_quality
+      - conclusive_document_quality
+      - supported_document
+      - minimum_accepted_age
+      - colour_picture
+      - data_consistency
+      - document_expiration
+      - face_detection
+      - filtered_document
+      - face_detected
+    MatchData:
+      type: object
+      required:
+      - given_name_score
+      - family_name_score
+      - birthdate_score
+      - matchScore
+      - matchThreshold
+      properties:
+        given_name_score:
+          type: number
+          example: 80
+        family_name_score:
+          type: number
+          example: 100
+        birthdate_score:
+          type: number
+          example: 100
+        matchScore:
+          type: number
+          example: 90
+        matchThreshold:
+          type: number
+          example: 65
+    IdentityData:
+      type: object
+      required:
+      - leftDigitalIdentity
+      - rightDigitalIdentity
+      properties:
+        leftDigitalIdentity:
+          type: string
+          enum:
+          - com.securekey.vids
+          - com.securekey.verified.me
+          example: com.securekey.verified.me
+        rightDigitalIdentity:
+          type: string
+          enum:
+          - com.securekey.vids
+          - com.securekey.verified.me
+          example: com.securekey.vids
+    Address:
+      description: Address
+      type: object
+      required:
+      - street_address
+      - locality
+      - region
+      - postal_code
+      - country
+      properties:
+        street_address:
+          type: string
+          example: 4101 Yonge Suite 501
+        locality:
+          type: string
+          example: TORONTO
+        region:
+          type: string
+          example: 'ON'
+        postal_code:
+          type: string
+          example: M2P 1N6
+        country:
+          type: string
+          example: CAN
+    AddressMissed:
+      description: No Address information
+      allOf:
+      - $ref: '#/components/schemas/Address'
+      - type: object
+        properties:
+          street_address:
+            type: string
+            example: N/A
+          locality:
+            type: string
+            example: N/A
+          region:
+            type: string
+            example: N/A
+          postal_code:
+            type: string
+            example: N/A
+          country:
+            type: string
+            example: N/A
+    LocalDate:
+      type: string
+      pattern: ^[0-9]{4}(-[0-9]{2}-[0-9]{2})?$
+      example: '1990-01-01'
+    Locale:
+      type: string
+      enum:
+      - en-CA
+      - fr-CA
+      example: en-CA
+    InvalidErrorMessage:
+      description: Format for error messages
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: string
+          example: invalid_request
+        error_description:
+          type: string
+          example: 'the request could not be processed because a required parameter was missing: {details}'
+    ForbiddenErrorMessage:
+      description: Format for error messages
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: string
+          example: forbidden
+        error_description:
+          type: string
+          example: Forbidden
+    UnauthorizedErrorMessage:
+      description: Format for error messages
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: string
+          example: unauthorized
+        error_description:
+          type: string
+          example: Unauthorized
+    GenericError:
+      description: The standard error format
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: string
+          example: internal_server_error
+        error_description:
+          type: string
+          example: Server Error
+x-readme:
+  explorer-enabled: true
+  proxy-enabled: true
+  samples-enabled: true
