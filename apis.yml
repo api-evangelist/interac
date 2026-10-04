@@ -49,7 +49,7 @@ accessModel:
   method: derived
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
 tags:
-- Financial-Services
+- Financial Services
 - Payments
 - Canada
 - Interac
@@ -68,6 +68,7 @@ tags_raw:
 - Open Banking
 - Consumer-Driven Banking
 - Infrastructure
+- Financial-Services
 created: '2026-07-23'
 modified: '2026-07-23'
 specificationVersion: '0.23'
