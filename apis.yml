@@ -70,7 +70,7 @@ tags_raw:
 - Infrastructure
 - Financial-Services
 created: '2026-07-23'
-modified: '2026-07-23'
+modified: '2026-10-06'
 specificationVersion: '0.23'
 apis:
 - aid: interac:interac-hub-verification-api
@@ -101,6 +101,8 @@ apis:
   - type: OpenIDConnectDiscovery
     url: https://gateway-portal.hub-verify.innovation.interac.ca/.well-known/openid-configuration
 common:
+- url: https://www.interac.ca/en/content-category/news/feed/
+  type: BlogRSS
 - type: DomainSecurity
   url: security/interac-domain-security.yml
 - type: Website
