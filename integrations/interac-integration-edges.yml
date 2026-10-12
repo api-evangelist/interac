@@ -1,0 +1,31 @@
+generated: '2026-10-12'
+method: searched
+source:
+- https://zapier.com/apps/interac/integrations
+- https://n8n.io/integrations/interac/
+- https://composio.dev/toolkits/interac
+- https://monid.ai/tools/interac
+checked:
+- https://composio.dev/toolkits/interac
+- https://monid.ai/tools/interac
+- https://n8n.io/integrations/interac/
+- https://zapier.com/apps/interac/integrations
+summary: null
+marketplace_apps: []
+edges:
+- partner_name: vopay
+  partner: vopay
+  partner_match: domain
+  type: contract
+  channel: partner-built
+  relationship: rail
+  direction: partner-built
+  evidence: https://github.com/api-evangelist/vopay/blob/main/openapi/vopay-file-conversion-endpoints-api-openapi.yml
+  contract_reference:
+    repo: vopay
+    spec_file: vopay-file-conversion-endpoints-api-openapi.yml
+    value: interac
+    property: requestBody.content.PaymentRail
+    detected_by: detect-payment-method-edges.py
+    detected: '2026-10-12'
+templates: []

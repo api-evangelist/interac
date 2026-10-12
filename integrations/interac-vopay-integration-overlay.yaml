@@ -1,0 +1,63 @@
+# DERIVED by build-integration-preconfigs.py (roadmap#949). Overlay on the PARTNER's contract:
+# where vopay's enum names interac, and what that value is.
+overlay: 1.0.0
+info:
+  title: interac as a rail in vopay's contract
+  version: 1.0.0
+extends: https://raw.githubusercontent.com/api-evangelist/vopay/refs/heads/main/openapi/vopay-file-conversion-endpoints-api-openapi.yml
+actions:
+- target: $.paths['/file-conversion/submit'].post.requestBody.content['application/x-www-form-urlencoded'].schema.properties.PaymentRail
+  update:
+    x-apievangelist-integration:
+      values:
+        interac:
+          provider: interac
+          relationship: rail
+          evidence: https://github.com/api-evangelist/vopay/blob/main/openapi/vopay-file-conversion-endpoints-api-openapi.yml
+      method: derived
+      generated: '2026-10-12'
+      generator: build-integration-preconfigs.py
+- target: $.paths['/file-conversion/submit'].post.requestBody.content['application/x-www-form-urlencoded'].schema.properties.AlternatePaymentRail
+  update:
+    x-apievangelist-integration:
+      values:
+        interac:
+          provider: interac
+          relationship: rail
+          evidence: https://github.com/api-evangelist/vopay/blob/main/openapi/vopay-file-conversion-endpoints-api-openapi.yml
+      method: derived
+      generated: '2026-10-12'
+      generator: build-integration-preconfigs.py
+- target: $.paths['/file-conversion/download'].get.parameters[6].schema
+  update:
+    x-apievangelist-integration:
+      values:
+        interac:
+          provider: interac
+          relationship: rail
+          evidence: https://github.com/api-evangelist/vopay/blob/main/openapi/vopay-file-conversion-endpoints-api-openapi.yml
+      method: derived
+      generated: '2026-10-12'
+      generator: build-integration-preconfigs.py
+- target: $.paths['/file-conversion/download'].get.parameters[7].schema
+  update:
+    x-apievangelist-integration:
+      values:
+        interac:
+          provider: interac
+          relationship: rail
+          evidence: https://github.com/api-evangelist/vopay/blob/main/openapi/vopay-file-conversion-endpoints-api-openapi.yml
+      method: derived
+      generated: '2026-10-12'
+      generator: build-integration-preconfigs.py
+- target: $.paths['/file-conversion/history'].get.parameters[5].schema
+  update:
+    x-apievangelist-integration:
+      values:
+        interac:
+          provider: interac
+          relationship: rail
+          evidence: https://github.com/api-evangelist/vopay/blob/main/openapi/vopay-file-conversion-endpoints-api-openapi.yml
+      method: derived
+      generated: '2026-10-12'
+      generator: build-integration-preconfigs.py
