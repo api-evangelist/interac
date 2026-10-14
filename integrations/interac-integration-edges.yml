@@ -9,6 +9,7 @@ checked:
 - https://composio.dev/toolkits/interac
 - https://monid.ai/tools/interac
 - https://n8n.io/integrations/interac/
+- https://registry.financialdataexchange.org/
 - https://zapier.com/apps/interac/integrations
 summary: null
 marketplace_apps: []
@@ -28,4 +29,28 @@ edges:
     property: requestBody.content.PaymentRail
     detected_by: detect-payment-method-edges.py
     detected: '2026-10-12'
+- partner_name: FDX (Financial Data Exchange)
+  partner: fdx
+  type: contract
+  channel: standard-directory
+  relationship: standard-participant
+  direction: partner-built
+  evidence: https://registry.financialdataexchange.org/
+  contract_reference:
+    register: FDX Registry
+    standard: FDX API
+    spec_file: null
+    register_api: https://registry.financialdataexchange.org/fdxregistryapi/organizations/search/listingTags
+    role: other
+    member_type: MEMBER
+    registered_name: Interac
+    register_id: 125
+    registered_website: www.interac.ca
+    country: Canada
+    fdx_version: null
+    matched_by: domain:interac.ca
+    detected_by: sweep-fdx.py
+    detected: '2026-10-14'
+  detected_by: sweep-fdx.py
+  first_seen: '2026-10-14'
 templates: []
