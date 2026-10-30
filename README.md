@@ -1,4 +1,4 @@
-# Interac (interac)
+# Interac
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -64,67 +64,97 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Interac Corp. is Canada's domestic payments and digital verification network, founded in 1984 (as the Interac Association) and reorganized as a for-profit corporation in 2018. Owned by a consortium of Canadian financial institutions and payment processors and headquartered in Toronto, Interac is shared national payment infrastructure — not a chartered bank — operating Interac Debit, Interac e-Transfer, and Interac verification / digital identity services across 300+ connected financial institutions.
+Interac Corp. is Canada's domestic payments and digital verification network, founded in 1984 as the Interac Association and reorganized as a for-profit corporation in 2018 (through the merger of Interac Association and Acxsys). Headquartered in Toronto and owned by a consortium of Canadian financial institutions and payment processors, Interac is shared national payment infrastructure rather than a chartered bank — it has no Schedule I / Schedule II banking charter. It operates the Interac Debit domestic debit network, Interac e-Transfer (used by roughly 88% of Canadians), and Interac verification / digital identity services, connecting 300+ financial institutions and processing on the order of 18.6 million transactions a day. As one of the core Canadian rails alongside Payments Canada, Interac runs the Interac Innovation Hub developer program. Its most openly documented public API surface is the Interac Hub Verification Service, an HTTP identity-verification API built on OAuth 2.0 and OpenID Connect (Authorization Code Grant with Pushed Authorization Requests); a self-serve sandbox is available through the Hub Verification developer portal, while full production access and other products (Business Request Money, Interac Direct) are partner-gated behind a commercial relationship with an issuing financial institution.
 
-**APIs.json:** [https://raw.githubusercontent.com/api-evangelist/interac/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/interac/refs/heads/main/apis.yml)
+**Areas:** Financial Services · Payments · Canada · Interac · Digital Identity · Verification · Open Banking · Consumer-Driven Banking · Infrastructure
 
-## Open Finance Posture
+## Interac on APIs.io
 
-Canada has no operational open-banking mandate yet — the federal Consumer-Driven Banking framework (Budget 2024 / Fall Economic Statement 2024, overseen by the FCAC) is legislated but not yet live, so access remains voluntary. Interac is one of the core Canadian rails, alongside Payments Canada. It runs the **Interac Innovation Hub** developer program ([innovation.interac.ca](https://innovation.interac.ca/)). The most openly documented public API surface is the **Interac Hub Verification Service**, an HTTP identity-verification API built on OAuth 2.0 / OpenID Connect (Authorization Code Grant with Pushed Authorization Requests), with a self-serve developer sandbox. Full production access and other products (Business Request Money, Interac Direct) are partner-gated behind a commercial relationship with an issuing financial institution. No first-party FDX or 1033-style data-access API is published; the Hub Verification API's public OpenID Connect discovery document is live and machine-readable.
+Everything profiled for Interac is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/interac/](https://apis.io/providers/interac/)** — or go straight to one of the APIs or properties below.
 
-## Tags
+### APIs (1)
 
-- Financial Services
-- Payments
-- Canada
-- Interac
-- Digital Identity
-- Verification
-- Open Banking
-- Consumer-Driven Banking
-- Infrastructure
+- [Interac Hub Verification API](https://apis.io/apis/interac/interac-hub-verification-api/) — The Interac Hub is an HTTP API that simplifies digital identity verification. Relying parties obtain verified identity data through financial-institution…
 
-## Timestamps
+### Published properties
 
-- **Created:** 2026-07-23
-- **Modified:** 2026-07-23
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-## APIs
+#### Security (2)
 
-### Interac Hub Verification API
+Authentication, trust centre, and vulnerability disclosure.
 
-The Interac Hub is an HTTP API that simplifies digital identity verification. Relying parties obtain verified identity data through financial-institution authentication (Interac Verification Service, IVS) and/or government-ID plus biometric selfie checks (Interac Document Verification Service, IDVS). It uses the OAuth 2.0 / OpenID Connect 1.0 Authorization Code Grant flow with Pushed Authorization Requests, and offers a self-serve developer sandbox.
+- [Interac Authentication](https://apis.io/security/interac/interac-authentication/)
+- [Interac Domain Security](https://apis.io/security/interac/interac-domain-security/)
 
-- **Human URL:** [https://documents.hub-verify.innovation.interac.ca/docs/overview](https://documents.hub-verify.innovation.interac.ca/docs/overview)
-- **Base URL:** `https://gateway-portal.hub-verify.innovation.interac.ca`
+#### OAuth scopes (1)
 
-#### Tags
+The permissions the API asks for.
 
-- Digital Identity
-- Verification
-- OpenID Connect
-- KYC
+- [Interac Scopes](https://apis.io/scopes/interac/interac-scopes/)
 
-#### Properties
+## Where to find this API
 
-- [Documentation](https://documents.hub-verify.innovation.interac.ca/docs/welcome)
-- [Documentation](https://documents.hub-verify.innovation.interac.ca/docs/overview)
-- [API Reference](https://documents.hub-verify.innovation.interac.ca/docs/31-api-endpoints)
-- [Quick Start Guide](https://documents.hub-verify.innovation.interac.ca/docs/quick-start-guide)
-- [OpenID Connect Discovery](https://gateway-portal.hub-verify.innovation.interac.ca/.well-known/openid-configuration)
-
-## Common Properties
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
 
 - [Website](https://www.interac.ca/)
-- [Developer Portal](https://innovation.interac.ca/)
 - [Documentation](https://documents.hub-verify.innovation.interac.ca/docs/welcome)
-- [GitHub Organization](https://github.com/Interac)
-- [LinkedIn](https://www.linkedin.com/company/interac-corp/)
-- [Blog / News](https://www.interac.ca/en/content-category/news/)
-- [Privacy Policy](https://www.interac.ca/en/privacy/)
-- [Terms of Service](https://www.interac.ca/en/legal/)
+- [Getting started](https://documents.hub-verify.innovation.interac.ca/docs/quick-start-guide)
+- [Support](https://innovation.interac.ca/support/)
+- [Blog](https://www.interac.ca/en/content-category/news/)
+- [Terms of service](https://www.interac.ca/en/legal/)
+- [Privacy policy](https://www.interac.ca/en/privacy/)
+- [GitHub](https://github.com/Interac)
 
-## Maintainers
+## API Evangelist rating
 
-**FN:** Kin Lane
-**Email:** kin@apievangelist.com
+**Kin Score 27.0** — thin · rubric 0.24.0 · scored 2026-10-17
+
+| Facet | Score |
+|---|---|
+| Discoverability | 73.2 |
+| Contract quality | 0.0 |
+| Contract governance | 18.2 |
+| Operational transparency | 2.6 |
+| Developer ergonomics | 51.8 |
+| Access clarity | 21.1 |
+
+**Agent readiness 14.6** — agent-aware
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | — |
+| Agentic Access | — |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | served (partial credit) |
+| Idempotency | — |
+| Error Semantics | documented (partial credit) |
+| OpenAPI Examples | — |
+| Rate Limit Signal | — |
+| Event Surface Described | — |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | served (partial credit) |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+
+**Regulatory alignment 37.8** — Banking & Open Finance
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/interac/](https://apis.io/providers/interac/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Interac: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/interac/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
